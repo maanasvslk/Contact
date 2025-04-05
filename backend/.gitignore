@@ -1,0 +1,20 @@
+# Virtual environment
+venv/
+
+# Database
+db.sqlite3
+
+# Compiled Python files
+__pycache__/
+*.pyc
+
+# Sensitive settings or environment files
+.env
+myproject/local_settings.py  # If you create a separate local settings file
+
+# IDE-specific files
+.idea/
+.vscode/
+
+# Logs and temporary files
+*.log
