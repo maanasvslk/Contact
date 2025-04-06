@@ -26,6 +26,7 @@ services:
       - ./backend:/app  # Optional for development; consider removing for production
     networks:
       - mynetwork
+    working_dir: /app/myproject
 
   db:
     image: postgres:13

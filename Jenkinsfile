@@ -33,6 +33,7 @@ pipeline {
         stage('Apply Migrations') {
             steps {
                 script {
+                    sh 'sleep 10'  // Wait for db to be ready
                     sh 'docker-compose exec -T backend python manage.py makemigrations'
                     sh 'docker-compose exec -T backend python manage.py migrate'
                 }
