@@ -9,6 +9,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 checkout scm
+                sh 'ls -R backend/myproject'  // Debug: List files in backend/myproject
             }
         }
 
@@ -56,6 +57,7 @@ pipeline {
         }
         failure {
             echo "Deployment failed for version ${VERSION}."
+            sh 'docker-compose logs backend'  // Debug: Show backend logs on failure
         }
     }
 }
