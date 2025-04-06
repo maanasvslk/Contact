@@ -23,7 +23,7 @@ services:
     environment:
       - VERSION=${VERSION}
     volumes:
-      - ./backend:/app  # Optional for development; consider removing for production
+      - ./backend/myproject:/app/myproject  # Mount only the myproject/ directory  # Optional for development; consider removing for production
     networks:
       - mynetwork
     working_dir: /app/myproject
