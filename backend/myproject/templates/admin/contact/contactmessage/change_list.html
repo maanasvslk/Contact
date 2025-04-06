@@ -1,0 +1,28 @@
+{% extends "admin/change_list.html" %}
+
+{% block result_list %}
+  <h2>All Messages Across Databases</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Database</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Message</th>
+        <th>Submitted At</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for db_name, msg in all_messages %}
+        <tr>
+          <td>{{ db_name }}</td>
+          <td>{{ msg.name }}</td>
+          <td>{{ msg.email }}</td>
+          <td>{{ msg.message }}</td>
+          <td>{{ msg.submitted_at }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {{ block.super }}
+{% endblock %}

@@ -60,7 +60,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],  # Points to backend/myproject/templates/,
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,17 +78,54 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
+import os
+def get_versioned_databases():
+    base_db_config = {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': 'maanas6114',
-        'HOST': 'localhost',
-        'PORT': '5431',
+        'PASSWORD': 'your_password_here',  # Replace with your actual password
+        'HOST': 'db',  # Matches docker-compose service name
+        'PORT': '5432',
     }
-}
+    databases = {
+        'default': {
+            **base_db_config,
+            'NAME': 'mydb_v1',  # Default database
+        }
+    }
+    # Dynamically add all versioned databases
+    version = os.getenv('VERSION', 'v1')
+    databases[f'mydb_{version}'] = {
+        **base_db_config,
+        'NAME': f'mydb_{version}',
+    }
+    return databases
+
+
+
+
+#
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': 'maanas6114',
+#         'HOST': 'localhost',
+#         'PORT': '5431',
+#     }
+# }
+
+
+DATABASES = get_versioned_databases()
+
+# Dynamic Database Router for Versioning
+DATABASE_ROUTERS = ['myproject.routers.DynamicVersionDatabaseRouter']
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
 
 
 # Password validation
@@ -132,5 +169,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Dynamic Database Router for Versioning
-DATABASE_ROUTERS = ['myproject.routers.DynamicVersionDatabaseRouter']
+
