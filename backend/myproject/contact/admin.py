@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.db import connections
 from django.http import HttpResponse
 from django.urls import path
+from .models import ContactMessage
 
 User = get_user_model()
 
@@ -17,6 +18,8 @@ class CustomAdminSite(admin.AdminSite):
     def databases_view(self, request):
         # Get all databases from settings
         databases = [db for db in connections.databases.keys() if db != 'default']
+        if not databases:  # If no additional databases, use 'default'
+            databases = ['default']
 
         # Collect user data from each database
         db_users = {}
@@ -40,8 +43,47 @@ class CustomAdminSite(admin.AdminSite):
         html += "</table>"
         return HttpResponse(html)
 
-# Replace the default admin site with the custom one
-admin.site = CustomAdminSite(name='custom_admin')
+# Create an instance of CustomAdminSite
+admin_site = CustomAdminSite(name='custom_admin')
 
-# Register your models as usual
-admin.site.register(User)
+# Register the User model
+admin_site.register(User)
+
+# Register the ContactMessage model
+@admin.register(ContactMessage, site=admin_site)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'message', 'submitted_at')
+    list_filter = ('submitted_at',)
+    search_fields = ('name', 'email', 'message')
+
+    def get_queryset(self, request):
+        # Fetch messages from all databases
+        all_messages = []
+        databases = [db for db in connections.databases.keys()]
+        for db in databases:
+            with connections[db].cursor() as cursor:
+                try:
+                    cursor.execute("SELECT id, name, email, message, submitted_at FROM contact_contactmessage")
+                    messages = cursor.fetchall()
+                    for msg in messages:
+                        all_messages.append((db, ContactMessage(id=msg[0], name=msg[1], email=msg[2], message=msg[3], submitted_at=msg[4])))
+                except Exception as e:
+                    print(f"Error fetching messages from {db}: {str(e)}")
+        return ContactMessage.objects.all()
+
+    def changelist_view(self, request, extra_context=None):
+        # Provide all_messages for the template
+        all_messages = []
+        databases = [db for db in connections.databases.keys()]
+        for db in databases:
+            with connections[db].cursor() as cursor:
+                try:
+                    cursor.execute("SELECT id, name, email, message, submitted_at FROM contact_contactmessage")
+                    messages = cursor.fetchall()
+                    for msg in messages:
+                        all_messages.append((db, ContactMessage(id=msg[0], name=msg[1], email=msg[2], message=msg[3], submitted_at=msg[4])))
+                except Exception as e:
+                    print(f"Error fetching messages from {db}: {str(e)}")
+        extra_context = extra_context or {}
+        extra_context['all_messages'] = all_messages
+        return super().changelist_view(request, extra_context=extra_context)
