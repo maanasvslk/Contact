@@ -79,53 +79,24 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 import os
+
+
 def get_versioned_databases():
-    # Base configuration for all databases
+    version = os.getenv('VERSION', 'v1')
     base_db_config = {
         'ENGINE': 'django.db.backends.postgresql',
         'USER': 'postgres',
         'PASSWORD': 'maanas6114',
         'HOST': 'db',
         'PORT': '5432',
+        'NAME': f'mydb_{version}',
     }
-
-    # Connect to the default postgres database to list all databases
-    try:
-        conn = psycopg2.connect(
-            dbname='postgres',
-            user='postgres',
-            password='maanas6114',
-            host='db',
-            port='5432'
-        )
-        conn.autocommit = True
-        cursor = conn.cursor()
-        cursor.execute("SELECT datname FROM pg_database WHERE datname LIKE 'mydb_%'")
-        versioned_dbs = [row[0] for row in cursor.fetchall()]
-        cursor.close()
-        conn.close()
-    except Exception as e:
-        print(f"Error listing databases: {e}")
-        versioned_dbs = []
-
-    # Define the default database
-    version = os.getenv('VERSION', 'v1')
     databases = {
-        'default': {
-            **base_db_config,
-            'NAME': f'mydb_{version}',
-        }
+        'default': base_db_config,
     }
-
-    # Add all versioned databases
-    for db_name in versioned_dbs:
-        if db_name != f'mydb_{version}':  # Avoid duplicating the default database
-            databases[db_name] = {
-                **base_db_config,
-                'NAME': db_name,
-            }
-
     return databases
+
+
 
 
 
