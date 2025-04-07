@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     environment {
-        VERSION = "${env.GIT_BRANCH?.split('/')[-1] ?: 'v1'}" // Default to 'v1' if no branch
+        VERSION = "${env.GIT_BRANCH?.split('/')[-1] ?: 'v1'}"
     }
 
     stages {
         stage('Checkout Code') {
             steps {
                 checkout scm
-                sh 'ls -R backend/myproject'  // Debug: List files in backend/myproject
+                sh 'ls -R backend/myproject'
             }
         }
 
@@ -24,9 +24,9 @@ pipeline {
         stage('Deploy Containers') {
             steps {
                 script {
-                    // Stop and remove existing containers for this version, then start new ones
-                    sh "docker-compose down --remove-orphans || true" // Ignore errors if no containers exist
-                    sh "docker-compose up -d" // Run in detached mode
+                    // Stop and remove existing containers and volumes
+                    sh "docker-compose down -v --remove-orphans || true" // Added -v to remove volumes
+                    sh "docker-compose up -d"
                 }
             }
         }
@@ -34,7 +34,9 @@ pipeline {
         stage('Apply Migrations') {
             steps {
                 script {
-                  echo "Migrations are now applied at container startup, skipping this stage."
+                    sh 'sleep 10'
+                    sh 'docker-compose exec -T backend python manage.py makemigrations'
+                    sh 'docker-compose exec -T backend python manage.py migrate'
                 }
             }
         }
@@ -43,7 +45,6 @@ pipeline {
             steps {
                 script {
                     echo "Running tests..."
-                    // Add test commands here if needed
                 }
             }
         }
@@ -55,7 +56,8 @@ pipeline {
         }
         failure {
             echo "Deployment failed for version ${VERSION}."
-            sh 'docker-compose logs backend'  // Debug: Show backend logs on failure
+            sh 'docker-compose logs backend'
+            sh 'docker-compose logs db'  // Added to show db logs on failure
         }
     }
 }
