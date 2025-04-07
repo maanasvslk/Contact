@@ -83,19 +83,21 @@ import os
 
 
 def get_versioned_databases():
-    version = os.getenv('VERSION', 'v1')
+    version = os.getenv('VERSION', 'v1').lower()
+    print(f"VERSION from environment: {version}")  # Debug print
     base_db_config = {
         'ENGINE': 'django.db.backends.postgresql',
         'USER': 'postgres',
         'PASSWORD': 'maanas6114',
         'HOST': 'db',
         'PORT': '5432',
-        'NAME': f'mydb_{version}',
     }
     databases = {
-        'default': {**base_db_config, 'NAME': f'mydb_{version}'},
-        'mydb_main': {**base_db_config, 'NAME': 'mydb_main'},  # Add previous database
+        'default': {**base_db_config, 'NAME': 'mydb_main'},
+        'mydb_v1': {**base_db_config, 'NAME': 'mydb_v1'},
+        'mydb_v2': {**base_db_config, 'NAME': 'mydb_v2'},
     }
+    print(f"DATABASES configuration: {databases}")  # Debug print
     return databases
 
 
