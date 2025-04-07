@@ -24,8 +24,7 @@ pipeline {
         stage('Deploy Containers') {
             steps {
                 script {
-                    // Stop and remove existing containers and volumes
-                    sh "docker-compose down -v --remove-orphans || true" // Added -v to remove volumes
+                    sh "docker-compose down -v --remove-orphans || true"
                     sh "docker-compose up -d"
                 }
             }
@@ -37,6 +36,7 @@ pipeline {
                     sh 'sleep 10'
                     sh 'docker-compose exec -T backend python manage.py makemigrations'
                     sh 'docker-compose exec -T backend python manage.py migrate'
+                    sh 'docker-compose exec -T backend python manage.py shell -c "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser(\'admin\', \'vslk.maanas@example.com\', \'maanas6114\') if not User.objects.filter(username=\'admin\').exists() else print(\'Superuser already exists, skipping creation.\')"'
                 }
             }
         }
@@ -57,7 +57,7 @@ pipeline {
         failure {
             echo "Deployment failed for version ${VERSION}."
             sh 'docker-compose logs backend'
-            sh 'docker-compose logs db'  // Added to show db logs on failure
+            sh 'docker-compose logs db'
         }
     }
 }
