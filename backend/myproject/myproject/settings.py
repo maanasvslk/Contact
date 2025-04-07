@@ -120,7 +120,7 @@ def get_versioned_databases():
 
 DATABASES = get_versioned_databases()
 
-
+# Dynamic database routing
 DATABASE_ROUTERS = ['myproject.routers.DynamicVersionDatabaseRouter']
 
 CORS_ALLOWED_ORIGINS = [
