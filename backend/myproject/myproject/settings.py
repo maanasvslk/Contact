@@ -93,7 +93,8 @@ def get_versioned_databases():
         'NAME': f'mydb_{version}',
     }
     databases = {
-        'default': base_db_config,
+        'default': {**base_db_config, 'NAME': f'mydb_{version}'},
+        'mydb_main': {**base_db_config, 'NAME': 'mydb_main'},  # Add previous database
     }
     return databases
 

@@ -52,9 +52,9 @@ admin_site.register(User)
 # Register the ContactMessage model
 @admin.register(ContactMessage, site=admin_site)
 class ContactMessageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'message', 'submitted_at')
+    list_display = ('name', 'email','phone_number','message', 'submitted_at')
     list_filter = ('submitted_at',)
-    search_fields = ('name', 'email', 'message')
+    search_fields = ('name', 'email','phone_number' ,'message')
 
     def get_queryset(self, request):
         # Fetch messages from all databases
