@@ -29,7 +29,7 @@ services:
   db:
     image: postgres:14
     environment:
-      POSTGRES_DB: mydb_${VERSION}
+      POSTGRES_DB: mydb_v1
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: maanas6114
     volumes:

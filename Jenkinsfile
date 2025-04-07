@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        VERSION = "${env.GIT_BRANCH?.split('/')[-1] ?: 'v1'}"
-    }
-
     stages {
         stage('Checkout Code') {
             steps {

@@ -83,7 +83,7 @@ import os
 
 
 def get_versioned_databases():
-    version = os.getenv('VERSION', 'v1')
+    version = 'v1'
     base_db_config = {
         'ENGINE': 'django.db.backends.postgresql',
         'USER': 'postgres',
