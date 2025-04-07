@@ -16,7 +16,7 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 script {
-                    sh 'docker-compose build'
+                    sh 'docker-compose build --no-cache'
                 }
             }
         }
@@ -34,9 +34,7 @@ pipeline {
         stage('Apply Migrations') {
             steps {
                 script {
-                    sh 'sleep 10'  // Wait for db to be ready
-                    sh 'docker-compose exec -T backend python manage.py makemigrations'
-                    sh 'docker-compose exec -T backend python manage.py migrate'
+                  echo "Migrations are now applied at container startup, skipping this stage."
                 }
             }
         }

@@ -16,7 +16,7 @@ RUN npm run build
 
 # Serve the app (using a simple server like serve)
 RUN npm install -g serve
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD ["serve", "-s", "build", "-l", "5000"]
 
 # Expose the port
 EXPOSE 3000

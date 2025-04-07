@@ -4,7 +4,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile  # Explicitly specify the Dockerfile
     ports:
-      - "3000:3000"
+      - "5000:5000"
     depends_on:
       - backend
     environment:
@@ -15,21 +15,19 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile  # Explicitly specify the Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     depends_on:
       - db
     environment:
       - VERSION=${VERSION}
-    volumes:
-      - ./backend/myproject:/app/myproject  # Mount only the myproject/ directory  # Optional for development; consider removing for production
     networks:
       - mynetwork
     working_dir: /app/myproject
 
   db:
-    image: postgres:13
+    image: postgres:14
     environment:
       POSTGRES_DB: mydb_${VERSION}
       POSTGRES_USER: postgres
@@ -38,6 +36,11 @@ services:
       - db_data:/var/lib/postgresql/data
     networks:
       - mynetwork
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   db_data:
