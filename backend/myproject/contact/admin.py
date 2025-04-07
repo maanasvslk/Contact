@@ -71,3 +71,5 @@ class ContactMessageAdmin(admin.ModelAdmin):
         extra_context = extra_context or {}
         extra_context['all_messages'] = all_messages
         return super().changelist_view(request, extra_context=extra_context)
+
+# The requirements
