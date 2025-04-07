@@ -48,10 +48,10 @@ pipeline {
 
     post {
         success {
-            echo "Deployment completed successfully for version ${VERSION}."
+            echo "Deployment completed successfully."
         }
         failure {
-            echo "Deployment failed for version ${VERSION}."
+            echo "Deployment failed."
             sh 'docker-compose logs backend'
             sh 'docker-compose logs db'
         }

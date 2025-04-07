@@ -83,14 +83,13 @@ import os
 
 
 def get_versioned_databases():
-    version = 'v1'
     base_db_config = {
         'ENGINE': 'django.db.backends.postgresql',
         'USER': 'postgres',
         'PASSWORD': 'maanas6114',
         'HOST': 'db',
         'PORT': '5432',
-        'NAME': f'mydb_{version}',
+        'NAME': 'mydb_v1',  # Hardcoded to v1
     }
     databases = {
         'default': base_db_config,
