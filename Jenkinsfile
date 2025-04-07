@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        VERSION = 'V2'
+        VERSION = 'v2'
     }
     stages {
         stage('Checkout Code') {
