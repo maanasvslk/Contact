@@ -1,14 +1,11 @@
 pipeline {
     agent any
 
-    environment {
-        VERSION = "v2"  // Hardcode for v2 deployment
-    }
-
     stages {
         stage('Checkout Code') {
             steps {
                 checkout scm
+                sh 'ls -R backend/myproject'
             }
         }
 
@@ -34,7 +31,16 @@ pipeline {
                 script {
                     sh 'sleep 10'
                     sh 'docker-compose exec -T backend python manage.py makemigrations'
-                    sh 'docker-compose exec -T backend python manage.py migrate --database=default'
+                    sh 'docker-compose exec -T backend python manage.py migrate'
+                    sh 'docker-compose exec -T backend python manage.py shell -c "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser(\'admin\', \'vslk.maanas@example.com\', \'maanas6114\') if not User.objects.filter(username=\'admin\').exists() else print(\'Superuser already exists, skipping creation.\')"'
+                }
+            }
+        }
+
+        stage('Test Application') {
+            steps {
+                script {
+                    echo "Running tests..."
                 }
             }
         }
@@ -42,10 +48,10 @@ pipeline {
 
     post {
         success {
-            echo "Deployment completed successfully for version ${VERSION}."
+            echo "Deployment completed successfully."
         }
         failure {
-            echo "Deployment failed for version ${VERSION}."
+            echo "Deployment failed."
             sh 'docker-compose logs backend'
             sh 'docker-compose logs db'
         }

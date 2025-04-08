@@ -2,20 +2,19 @@
 set -e
 
 # Wait for the database to be ready
-until python -c "import psycopg2; psycopg2.connect(dbname='mydb_${VERSION}', user='postgres', password='maanas6114', host='db', port='5432')" 2>/dev/null; do
+until python -c "import psycopg2; psycopg2.connect(dbname='mydb_v1', user='postgres', password='maanas6114', host='db', port='5432')" 2>/dev/null; do
   echo "Waiting for PostgreSQL to be ready for migrations..."
   sleep 2
 done
 
-# Apply migrations only to the current version database
-echo "Applying migrations to mydb_${VERSION}..."
+# Apply migrations
+echo "Applying migrations..."
 python manage.py makemigrations
-python manage.py migrate --database=default
+python manage.py migrate
 
-# Don't create superuser for v2
-if [ "$VERSION" != "v2" ]; then
-    echo "Creating superuser..."
-    python manage.py shell <<EOF
+# Create the superuser non-interactively
+echo "Creating superuser..."
+python manage.py shell <<EOF
 from django.contrib.auth import get_user_model
 User = get_user_model()
 if not User.objects.filter(username='admin').exists():
@@ -24,4 +23,3 @@ if not User.objects.filter(username='admin').exists():
 else:
     print("Superuser already exists, skipping creation.")
 EOF
-fi

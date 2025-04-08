@@ -25,7 +25,7 @@ services:
   db:
     image: postgres:14
     environment:
-      POSTGRES_MULTIPLE_DATABASES: mydb_v1,mydb_v2
+      POSTGRES_DB: mydb_v1  # Hardcoded to v1
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: maanas6114
     volumes:
@@ -38,10 +38,8 @@ services:
       timeout: 5s
       retries: 5
 
-
 volumes:
   db_data:
-
 
 networks:
   mynetwork:

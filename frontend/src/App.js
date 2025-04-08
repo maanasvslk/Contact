@@ -4,7 +4,7 @@ import axios from 'axios';
 function App() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  // const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
@@ -13,7 +13,7 @@ function App() {
     const formData = {
       name,
       email,
-      phone,
+      // phone,
       message,
     };
 
@@ -22,7 +22,7 @@ function App() {
       alert('Message sent successfully!');
       setName('');
       setEmail('');
-      setPhone('');
+      // setPhone('');
       setMessage('');
     } catch (error) {
       console.error(error);
@@ -55,15 +55,15 @@ function App() {
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div>
-            <input
-                type="tel"
-                placeholder="Your Phone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          {/*<div>*/}
+          {/*  <input*/}
+          {/*      type="tel"*/}
+          {/*      placeholder="Your Phone"*/}
+          {/*      value={phone}*/}
+          {/*      onChange={(e) => setPhone(e.target.value)}*/}
+          {/*      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"*/}
+          {/*  />*/}
+          {/*</div>*/}
           <div>
             <textarea
                 placeholder="Your Message"
