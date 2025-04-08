@@ -10,16 +10,15 @@ pipeline {
             steps {
                 script {
                     sh 'docker-compose build'
-                    // Run migrations without  volume mount and copy db.sqlite3 to host
-                    sh '''
-                        docker run --rm contact-backend python manage.py migrate
-                        docker run --rm -v $(pwd)/backend/myproject:/app/myproject contact-backend \
-                            bash -c "cp /app/myproject/db.sqlite3 /app/myproject/db.sqlite3.host && mv /app/myproject/db.sqlite3.host /app/myproject/db.sqlite3"
-                        chmod 666 backend/myproject/db.sqlite3
-                    '''
+                    // Run migrations without volume mount
+                    sh 'docker run --rm contact-backend python manage.py migrate'
+                    // Copy db.sqlite3 to host with a specific file mount
+                    sh 'docker run --rm -v $(pwd)/backend/myproject/db.sqlite3:/app/myproject/db.sqlite3 contact-backend cp /app/myproject/db.sqlite3 /app/myproject/db.sqlite3'
+                    // Set permissions
+                    sh 'chmod 666 backend/myproject/db.sqlite3'
                     // Create superuser
                     sh '''
-                        docker run --rm contact-backend python manage.py shell -c \
+                        docker run --rm -v $(pwd)/backend/myproject/db.sqlite3:/app/myproject/db.sqlite3 contact-backend python manage.py shell -c \
                             "from django.contrib.auth import get_user_model; \
                              User = get_user_model(); \
                              if not User.objects.filter(username='admin').exists(): \
