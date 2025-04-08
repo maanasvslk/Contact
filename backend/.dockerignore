@@ -1,7 +1,7 @@
 .git
 .gitignore
 Dockerfile
-db.sqlite3
+myproject/db.sqlite3
 *.pyc
 __pycache__
 tests.py

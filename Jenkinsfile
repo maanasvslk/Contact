@@ -1,23 +1,19 @@
 pipeline {
     agent any
-
     stages {
         stage('Checkout Code') {
             steps {
                 checkout scm
             }
         }
-
         stage('Build and Deploy') {
             steps {
                 script {
-                    // Build images (rely on cache)
+                    // Pre-create db.sqlite3 if it doesn't exist
+                    sh 'mkdir -p backend/myproject && touch backend/myproject/db.sqlite3'
                     sh 'docker-compose build'
-                    // Stop and remove existing containers
                     sh 'docker-compose down --remove-orphans || true'
-                    // Start containers
                     sh 'docker-compose up -d'
-                    // Apply migrations and create superuser in one command
                     sh '''
                         docker-compose exec -T backend python manage.py migrate
                         docker-compose exec -T backend python manage.py shell -c \
@@ -30,7 +26,6 @@ pipeline {
             }
         }
     }
-
     post {
         success {
             echo "Deployment completed successfully."

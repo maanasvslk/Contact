@@ -5,8 +5,10 @@ venv/
 db.sqlite3
 
 # Compiled Python files
-__pycache__/
+myproject/db.sqlite3
 *.pyc
+__pycache__
+
 
 # Sensitive settings or environment files
 .env
