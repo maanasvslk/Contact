@@ -10,15 +10,14 @@ pipeline {
             steps {
                 script {
                     sh 'docker-compose build'
-                    // Run migrations without volume mount
-                    sh 'docker run --rm contact-backend python manage.py migrate'
-                    // Copy db.sqlite3 to host using a temporary mount point
-                    sh 'docker run --rm -v $(pwd)/backend/myproject:/temp contact-backend cp /app/myproject/db.sqlite3 /temp/db.sqlite3'
-                    // Move to final location and set permissions
-                    sh 'mv backend/myproject/db.sqlite3 backend/myproject/db.sqlite3.bak || true'  // Backup existing file if it exists
-                    sh 'mv backend/myproject/db.sqlite3 backend/myproject/db.sqlite3'
+                    // Run migrations and copy db.sqlite3 in one step
+                    sh '''
+                        docker run --rm -v $(pwd)/backend/myproject:/temp contact-backend bash -c \
+                            "python manage.py migrate && cp /app/myproject/db.sqlite3 /temp/db.sqlite3"
+                    '''
+                    // Set permissions
                     sh 'chmod 666 backend/myproject/db.sqlite3'
-                    // Create superuser with the final file
+                    // Create superuser
                     sh '''
                         docker run --rm -v $(pwd)/backend/myproject/db.sqlite3:/app/myproject/db.sqlite3 contact-backend python manage.py shell -c \
                             "from django.contrib.auth import get_user_model; \
@@ -40,6 +39,7 @@ pipeline {
             echo "Deployment failed."
             sh 'docker-compose logs backend'
             sh 'ls -la backend/myproject/'
+            sh 'docker run --rm contact-backend bash -c "python manage.py migrate && ls -la /app/myproject/"'
         }
     }
 }
