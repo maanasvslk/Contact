@@ -6,6 +6,7 @@ from django.db import models
 class ContactMessage(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
+    phone = models.CharField(max_length=15, blank=True, null=True)  # New field
     message = models.TextField()
     submitted_at = models.DateTimeField(auto_now_add= True)
 

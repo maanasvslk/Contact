@@ -4,6 +4,7 @@ import axios from 'axios';
 function App() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
@@ -12,6 +13,7 @@ function App() {
     const formData = {
       name,
       email,
+      phone,
       message,
     };
 
@@ -20,6 +22,7 @@ function App() {
       alert('Message sent successfully!');
       setName('');
       setEmail('');
+      setPhone('');
       setMessage('');
     } catch (error) {
       console.error(error);
@@ -53,13 +56,22 @@ function App() {
             />
           </div>
           <div>
+            <input
+                type="tel"
+                placeholder="Your Phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
             <textarea
-              placeholder="Your Message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              required
-              rows="5"
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Your Message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                required
+                rows="5"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             ></textarea>
           </div>
           <div>
