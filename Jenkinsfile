@@ -18,18 +18,24 @@ pipeline {
                     // Start the services in detached mode
                     sh 'docker-compose up -d'
 
-                    // Wait for backend to be ready
-                    sh 'sleep 10'
+                    // Wait for backend to be healthy
+                    sh '''
+                        until docker inspect --format='{{.State.Health.Status}}' contact-backend-1 | grep -q "healthy"; do
+                            echo "Waiting for backend to be healthy..."
+                            sleep 5
+                        done
+                        echo "Backend is healthy!"
+                    '''
 
                     // Run migrations
                     sh '''
-                        docker-compose exec backend bash -c \
+                        docker-compose exec -T backend bash -c \
                             "python manage.py migrate"
                     '''
 
                     // Create superuser using the init script
                     sh '''
-                        docker-compose exec backend bash -c \
+                        docker-compose exec -T backend bash -c \
                             "chmod +x /app/myproject/init-superuser.sh && \
                             /app/myproject/init-superuser.sh"
                     '''
