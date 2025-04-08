@@ -1,0 +1,9 @@
+.git
+.gitignore
+Dockerfile
+README.md
+node_modules
+build
+*.test.js
+setupTests.js
+reportWebVitals.js

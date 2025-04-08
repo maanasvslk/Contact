@@ -1,0 +1,10 @@
+.git
+.gitignore
+Dockerfile
+requirements.txt
+db.sqlite3
+*.pyc
+__pycache__
+tests.py
+migrations/*
+!migrations/__init__.py

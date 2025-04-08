@@ -1,5 +1,5 @@
-import os
-
+# Since we don't need database routing anymore, we can simplify or remove this file
+# You can either delete it entirely or keep a minimal version:
 class DynamicVersionDatabaseRouter:
     def db_for_read(self, model, **hints):
         return 'default'
@@ -11,4 +11,4 @@ class DynamicVersionDatabaseRouter:
         return True
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
-        return db == 'default'
+        return True

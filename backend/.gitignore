@@ -18,3 +18,5 @@ myproject/local_settings.py  # If you create a separate local settings file
 
 # Logs and temporary files
 *.log
+
+

@@ -1,22 +1,23 @@
-# Use an official Node runtime as the base image
-FROM node:18
+FROM node:18-slim AS build
 
-# Set working directory
 WORKDIR /app
 
-# Install dependencies
+# Copy package files first to cache npm install
 COPY package.json package-lock.json ./
 RUN npm install
 
-# Copy the React app
-COPY . .
-
-# Build the app
+# Copy only source files needed for build
+COPY src/ ./src/
+COPY public/ ./public/
+COPY postcss.config.js tailwind.config.js ./
 RUN npm run build
 
-# Serve the app (using a simple server like serve)
-RUN npm install -g serve
-CMD ["serve", "-s", "build", "-l", "5000"]
+# Final stage for serving
+FROM node:18-slim
 
-# Expose the port
-EXPOSE 3000
+WORKDIR /app
+COPY --from=build /app/build ./build
+RUN npm install -g serve
+
+EXPOSE 5000
+CMD ["serve", "-s", "build", "-l", "5000"]

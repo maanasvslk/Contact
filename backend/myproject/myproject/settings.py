@@ -79,22 +79,22 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-import os
-
-
-def get_versioned_databases():
-    base_db_config = {
-        'ENGINE': 'django.db.backends.postgresql',
-        'USER': 'postgres',
-        'PASSWORD': 'maanas6114',
-        'HOST': 'db',
-        'PORT': '5432',
-        'NAME': 'mydb_v1',  # Hardcoded to v1
-    }
-    databases = {
-        'default': base_db_config,
-    }
-    return databases
+# import os
+#
+#
+# def get_versioned_databases():
+#     base_db_config = {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'USER': 'postgres',
+#         'PASSWORD': 'maanas6114',
+#         'HOST': 'db',
+#         'PORT': '5432',
+#         'NAME': 'mydb_v1',  # Hardcoded to v1
+#     }
+#     databases = {
+#         'default': base_db_config,
+#     }
+#     return databases
 
 
 
@@ -115,11 +115,17 @@ def get_versioned_databases():
 #     }
 # }
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
-DATABASES = get_versioned_databases()
+# DATABASES = get_versioned_databases()
 
 
-DATABASE_ROUTERS = ['myproject.routers.DynamicVersionDatabaseRouter']
+# DATABASE_ROUTERS = ['myproject.routers.DynamicVersionDatabaseRouter']
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5000",
