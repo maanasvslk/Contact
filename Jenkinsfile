@@ -38,6 +38,7 @@ pipeline {
         failure {
             echo "Deployment failed."
             sh 'docker-compose logs backend'
+            sh 'ls -la backend/myproject/'
         }
     }
 }
