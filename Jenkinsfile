@@ -20,11 +20,26 @@ pipeline {
 
                     // Wait for backend to be healthy
                     sh '''
-                        until docker inspect --format='{{.State.Health.Status}}' contact-backend-1 | grep -q "healthy"; do
+                        for i in {1..30}; do
+                            STATUS=$(docker inspect --format='{{.State.Health.Status}}' contact-backend-1 || echo "not_running")
+                            echo "Backend status: $STATUS"
+                            if [ "$STATUS" = "healthy" ]; then
+                                echo "Backend is healthy!"
+                                break
+                            fi
+                            if [ "$STATUS" = "not_running" ]; then
+                                echo "Backend container is not running!"
+                                docker-compose logs backend
+                                exit 1
+                            fi
                             echo "Waiting for backend to be healthy..."
                             sleep 5
                         done
-                        echo "Backend is healthy!"
+                        if [ "$STATUS" != "healthy" ]; then
+                            echo "Backend failed to become healthy!"
+                            docker-compose logs backend
+                            exit 1
+                        fi
                     '''
 
                     // Run migrations
