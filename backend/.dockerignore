@@ -1,7 +1,6 @@
 .git
 .gitignore
 Dockerfile
-requirements.txt
 db.sqlite3
 *.pyc
 __pycache__
