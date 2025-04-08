@@ -17,7 +17,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/myproject/db.sqlite3:/app/myproject/db.sqlite3  # Updated path
+      - ./backend/myproject/db.sqlite3:/app/myproject/db.sqlite3
     networks:
       - mynetwork
     working_dir: /app/myproject
