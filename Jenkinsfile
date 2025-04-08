@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     sh 'docker-compose build'
-                    // Run migrations without volume mount and copy db.sqlite3 to host
+                    // Run migrations without  volume mount and copy db.sqlite3 to host
                     sh '''
                         docker run --rm contact-backend python manage.py migrate
                         docker run --rm -v $(pwd)/backend/myproject:/app/myproject contact-backend \
