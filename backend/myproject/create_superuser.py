@@ -2,9 +2,12 @@ import os
 from django.core.management import call_command
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
+import django
 
 # Ensure that Django settings are configured
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
+django.setup()
+
 
 def create_superuser():
     try:
