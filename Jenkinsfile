@@ -21,12 +21,22 @@ pipeline {
                     // Wait for backend to be up (check HTTP response)
                     sh '''
                         for i in {1..60}; do
+                            # Try localhost first
                             STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/admin/ || echo "0")
-                            echo "Backend HTTP status: $STATUS"
+                            echo "Backend HTTP status (localhost): $STATUS"
                             if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
-                                echo "Backend is up and running!"
+                                echo "Backend is up and running on localhost!"
                                 break
                             fi
+
+                            # If localhost fails, try the container hostname
+                            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://contact-backend-1:8000/admin/ || echo "0")
+                            echo "Backend HTTP status (contact-backend-1): $STATUS"
+                            if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
+                                echo "Backend is up and running on contact-backend-1!"
+                                break
+                            fi
+
                             echo "Waiting for backend to be up..."
                             sleep 5
                         done

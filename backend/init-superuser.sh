@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# Run migrations
-echo "Running migrations..."
-python manage.py migrate
+# Skip migrations since they were run during the build
+echo "Skipping migrations (already run during build)..."
 
 # Create superuser using a more reliable method
 echo "Creating superuser..."
