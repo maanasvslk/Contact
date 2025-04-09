@@ -6,12 +6,13 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/myproject:/app  # Mount the correct directory
+      - ./backend/myproject:/app  # Mount the correct backend directory
     environment:
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_PASSWORD=maanas6114
       - DJANGO_SUPERUSER_EMAIL=vslk.maanas@example.com
-    working_dir: /app  # Ensure it starts from the correct working directory for manage.py
+    working_dir: /app  # Ensure it starts from the correct directory for manage.py
+    command: python manage.py runserver 0.0.0.0:8000  # Run Django server using the correct manage.py
 
   frontend:
     build: ./frontend
