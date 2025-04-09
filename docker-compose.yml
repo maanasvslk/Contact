@@ -6,13 +6,12 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/myproject:/app  # Mount the correct backend directory
+      - C:/JenkinsData/jenkins_home/workspace/Contact/backend/myproject:/app/myproject
     environment:
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_PASSWORD=maanas6114
       - DJANGO_SUPERUSER_EMAIL=vslk.maanas@example.com
-    working_dir: /app  # Ensure it starts from the correct directory for manage.py
-    command: python manage.py runserver 0.0.0.0:8000  # Run Django server using the correct manage.py
+    command: python /app/myproject/manage.py runserver 0.0.0.0:8000  # Ensure the correct location is used here
 
   frontend:
     build: ./frontend
