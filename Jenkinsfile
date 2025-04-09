@@ -1,87 +1,68 @@
 pipeline {
     agent any
+
+    environment {
+        DOCKER_BUILDKIT = 1
+    }
+
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
         }
+
+        stage('Verify Files') {
+            steps {
+                sh 'ls -la backend/'
+                sh 'ls -la backend/myproject/'
+                sh 'cat backend/init-superuser.sh'
+            }
+        }
+
         stage('Build and Deploy') {
             steps {
-                script {
-                    // Clean up any existing containers and volumes
-                    sh 'docker-compose down --remove-orphans --volumes || true'
+                timeout(time: 120, unit: 'SECONDS') {
+                    script {
+                        sh 'docker-compose down --remove-orphans --volumes || true'
+                        sh 'docker-compose build --no-cache'
+                        sh 'docker-compose up -d'
 
-                    // Build the images with no cache to ensure a fresh build
-                    sh 'docker-compose build --no-cache'
+                        // Health check with retries
+                        sh '''
+                            for i in {1..20}; do
+                                if docker-compose exec backend curl -s -f http://localhost:8000/admin/; then
+                                    echo "Backend is up!"
+                                    break
+                                fi
+                                echo "Waiting for backend... (attempt $i)"
+                                sleep 5
+                            done
 
-                    // Start the services in detached mode
-                    sh 'docker-compose up -d'
-
-                    // Wait for backend to be up (check HTTP response from within the network)
-                    sh '''
-                        for i in {1..60}; do
-                            # Run curl from a container on the same network
-                            STATUS=$(docker run --rm --network contact_mynetwork curlimages/curl:8.10.1 curl -s -o /dev/null -w "%{http_code}" http://contact-backend-1:8000/admin/ || echo "0")
-                            echo "Backend HTTP status (contact-backend-1): $STATUS"
-                            if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
-                                echo "Backend is up and running on contact-backend-1!"
-                                break
-                            fi
-
-                            # Also try localhost:8001
-                            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8001/admin/ || echo "0")
-                            echo "Backend HTTP status (localhost:8001): $STATUS"
-                            if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
-                                echo "Backend is up and running on localhost:8001!"
-                                break
-                            fi
-
-                            echo "Waiting for backend to be up... (attempt $i of 60)"
-                            docker ps -a --filter "name=contact-backend-1" --format "{{.Status}}"
-                            sleep 5
-                        done
-                        if [ "$STATUS" != "200" ] && [ "$STATUS" != "302" ]; then
-                            echo "Backend failed to start!"
-                            docker-compose logs backend
+                            for i in {1..10}; do
+                                if curl -s -f http://localhost:3000; then
+                                    echo "Frontend is up!"
+                                    exit 0
+                                fi
+                                sleep 5
+                            done
+                            echo "Services failed to start!"
                             exit 1
-                        fi
-                    '''
-
-                    // Wait for frontend to be up (check HTTP response)
-                    sh '''
-                        for i in {1..60}; do
-                            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/ || echo "0")
-                            echo "Frontend HTTP status: $STATUS"
-                            if [ "$STATUS" = "200" ]; then
-                                echo "Frontend is up and running!"
-                                break
-                            fi
-                            echo "Waiting for frontend to be up..."
-                            sleep 5
-                        done
-                        if [ "$STATUS" != "200" ]; then
-                            echo "Frontend failed to start!"
-                            docker-compose logs frontend
-                            exit 1
-                        fi
-                    '''
-
-                    // Verify the database file (it should already be in the workspace due to the volume mount)
-                    sh 'ls -la backend/myproject/db.sqlite3 || echo "Database file not found."'
+                        '''
+                    }
                 }
             }
         }
     }
+
     post {
-        success {
-            echo "Deployment completed successfully."
+        always {
+            sh 'docker-compose ps'
+            sh 'docker-compose logs backend || true'
         }
         failure {
-            echo "Deployment failed."
-            sh 'docker-compose logs backend'
-            sh 'docker-compose logs frontend'
-            sh 'ls -la backend/myproject/'
+            sh 'docker-compose logs'
+            sh 'docker exec contact-backend-1 ls -la /app || true'
         }
     }
 }

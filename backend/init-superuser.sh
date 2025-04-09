@@ -1,9 +1,22 @@
 #!/bin/bash
+set -e
 
-echo "Creating superuser..."
-if python manage.py shell -c "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='admin').exists() or User.objects.create_superuser('admin', 'admin@example.com', 'admin')" 2>/dev/null; then
-    echo "Superuser 'admin' created successfully."
-else
-    echo "Superuser 'admin' already exists."
-fi
-echo "Superuser creation completed."
+# Start server in background
+python myproject/manage.py runserver 0.0.0.0:8000 &
+
+# Wait for server to be ready
+sleep 5
+
+# Create superuser
+python myproject/manage.py shell <<EOF
+from django.contrib.auth import get_user_model
+User = get_user_model()
+if not User.objects.filter(username='admin').exists():
+    User.objects.create_superuser('admin', 'admin@example.com', 'admin')
+    print("Superuser created successfully!")
+else:
+    print("Superuser already exists.")
+EOF
+
+# Keep container running
+wait
