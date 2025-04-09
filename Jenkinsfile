@@ -28,10 +28,10 @@ pipeline {
                         sh 'docker-compose build --no-cache'
                         sh 'docker-compose up -d'
 
-                        // Health check with retries
+                     // Health check with retries
                         sh '''
                             for i in {1..20}; do
-                                if docker-compose exec backend curl -s -f http://localhost:8000/admin/; then
+                                if curl -s -f http://localhost:8001/admin/; then
                                     echo "Backend is up!"
                                     break
                                 fi
@@ -53,7 +53,6 @@ pipeline {
                 }
             }
         }
-    }
 
     post {
         always {
