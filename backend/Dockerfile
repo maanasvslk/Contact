@@ -6,5 +6,5 @@ COPY myproject/ .
 COPY init-superuser.sh .
 RUN chmod +x init-superuser.sh
 EXPOSE 8000
-# Run init-superuser.sh then start Django runserver
+# Fix the path to init-superuser.sh (after volume mount, it's in /app/)
 CMD ["/bin/bash", "-c", "/app/init-superuser.sh && python manage.py runserver 0.0.0.0:8000"]
