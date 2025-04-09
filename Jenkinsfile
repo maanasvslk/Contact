@@ -12,8 +12,8 @@ pipeline {
                     // Clean up any existing containers
                     sh 'docker-compose down --remove-orphans --volumes || true'
 
-                    // Build the images
-                    sh 'docker-compose build'
+                    // Build the images with no cache
+                    sh 'docker-compose build --no-cache'
 
                     // Start the services in detached mode
                     sh 'docker-compose up -d'
