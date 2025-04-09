@@ -2,11 +2,11 @@ services:
   backend:
     build: ./backend
     ports:
-      - "8000:8000"
+      - "8001:8000"
     networks:
       - mynetwork
     volumes:
-      - ./backend/myproject/db.sqlite3:/app/myproject/db.sqlite3
+      - ./backend/myproject/:/app/myproject/
 
   frontend:
     build: ./frontend

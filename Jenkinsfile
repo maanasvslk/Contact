@@ -66,11 +66,8 @@ pipeline {
                         fi
                     '''
 
-                    // Verify the database file by copying it from the container
-                    sh '''
-                        docker cp contact-backend-1:/app/myproject/db.sqlite3 backend/myproject/db.sqlite3 || echo "Failed to copy db.sqlite3 from container."
-                        ls -la backend/myproject/db.sqlite3 || echo "Database file not found."
-                    '''
+                    // Verify the database file (it should already be in the workspace due to the volume mount)
+                    sh 'ls -la backend/myproject/db.sqlite3 || echo "Database file not found."'
                 }
             }
         }
