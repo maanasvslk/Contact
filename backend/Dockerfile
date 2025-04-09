@@ -15,6 +15,9 @@ COPY myproject/ .
 COPY init-superuser.sh .
 RUN chmod +x init-superuser.sh
 
+# Ensure the working directory is writable for the database
+RUN chmod -R 777 /app/myproject
+
 # Expose the port for the Django server
 EXPOSE 8000
 

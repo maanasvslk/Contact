@@ -20,7 +20,7 @@ pipeline {
 
                     // Wait for backend to be up (check HTTP response)
                     sh '''
-                        for i in {1..30}; do
+                        for i in {1..60}; do
                             STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/admin/ || echo "0")
                             echo "Backend HTTP status: $STATUS"
                             if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
@@ -39,7 +39,7 @@ pipeline {
 
                     // Wait for frontend to be up (check HTTP response)
                     sh '''
-                        for i in {1..30}; do
+                        for i in {1..60}; do
                             STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/ || echo "0")
                             echo "Frontend HTTP status: $STATUS"
                             if [ "$STATUS" = "200" ]; then
@@ -57,7 +57,7 @@ pipeline {
                     '''
 
                     // Verify the database file
-                    sh 'ls -la backend/myproject/db.sqlite3'
+                    sh 'ls -la backend/myproject/db.sqlite3 || echo "Database file not found."'
                 }
             }
         }

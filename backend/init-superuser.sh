@@ -1,10 +1,27 @@
 #!/bin/bash
 
 # Run migrations
+echo "Running migrations..."
 python manage.py migrate
 
-# Create a superuser if it doesn't exist
-echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='admin').exists() or User.objects.create_superuser('admin', 'vslk.maanas@gmail.com', 'maanas6114')" | python manage.py shell
+# Create superuser using a more reliable method
+echo "Creating superuser..."
+python manage.py shell <<EOF
+from django.contrib.auth import get_user_model
+User = get_user_model()
+if not User.objects.filter(username='admin').exists():
+    User.objects.create_superuser('admin', 'admin@example.com', 'adminpass')
+    print("Superuser 'admin' created successfully.")
+else:
+    print("Superuser 'admin' already exists.")
+EOF
 
-# Exit successfully
+# Check if the superuser creation was successful
+if [ $? -eq 0 ]; then
+    echo "Superuser creation completed."
+else
+    echo "Failed to create superuser."
+    exit 1
+fi
+
 exit 0
