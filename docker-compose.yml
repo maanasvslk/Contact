@@ -2,27 +2,19 @@ version: '3.8'
 
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    volumes:
-      - ./backend/myproject:/app/myproject
+    build: ./backend
     ports:
       - "8000:8000"
-    environment:
-      - PYTHONUNBUFFERED=1
-    restart: unless-stopped
+    networks:
+      - mynetwork
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    build: ./frontend
     ports:
       - "3000:3000"
-    depends_on:
-      - backend
-    restart: unless-stopped
+    networks:
+      - mynetwork
 
 networks:
-  default:
+  mynetwork:
     driver: bridge

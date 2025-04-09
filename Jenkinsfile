@@ -1,57 +1,76 @@
 pipeline {
     agent any
-
-    environment {
-        DOCKER_BUILDKIT = 1
-    }
-
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
                 checkout scm
             }
         }
-
         stage('Build and Deploy') {
             steps {
-                timeout(time: 120, unit: 'SECONDS') {
-                    script {
-                        sh 'docker-compose down --remove-orphans --volumes || true'
-                        sh 'docker-compose build --no-cache'
-                        sh 'docker-compose up -d'
+                script {
+                    // Clean up any existing containers and volumes
+                    sh 'docker-compose down --remove-orphans --volumes || true'
 
-                        // Health checks
-                        sh '''
-                            for i in {1..10}; do
-                                if curl -s -f http://localhost:8000/admin/; then
-                                    echo "Backend is up!"
-                                    break
-                                fi
-                                sleep 5
-                            done
+                    // Build the images with no cache to ensure a fresh build
+                    sh 'docker-compose build --no-cache'
 
-                            for i in {1..10}; do
-                                if curl -s -f http://localhost:3000; then
-                                    echo "Frontend is up!"
-                                    exit 0
-                                fi
-                                sleep 5
-                            done
-                            echo "Services failed to start!"
+                    // Start the services in detached mode
+                    sh 'docker-compose up -d'
+
+                    // Wait for backend to be up (check HTTP response)
+                    sh '''
+                        for i in {1..30}; do
+                            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/admin/ || echo "0")
+                            echo "Backend HTTP status: $STATUS"
+                            if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
+                                echo "Backend is up and running!"
+                                break
+                            fi
+                            echo "Waiting for backend to be up..."
+                            sleep 5
+                        done
+                        if [ "$STATUS" != "200" ] && [ "$STATUS" != "302" ]; then
+                            echo "Backend failed to start!"
+                            docker-compose logs backend
                             exit 1
-                        '''
-                    }
+                        fi
+                    '''
+
+                    // Wait for frontend to be up (check HTTP response)
+                    sh '''
+                        for i in {1..30}; do
+                            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/ || echo "0")
+                            echo "Frontend HTTP status: $STATUS"
+                            if [ "$STATUS" = "200" ]; then
+                                echo "Frontend is up and running!"
+                                break
+                            fi
+                            echo "Waiting for frontend to be up..."
+                            sleep 5
+                        done
+                        if [ "$STATUS" != "200" ]; then
+                            echo "Frontend failed to start!"
+                            docker-compose logs frontend
+                            exit 1
+                        fi
+                    '''
+
+                    // Verify the database file
+                    sh 'ls -la backend/myproject/db.sqlite3'
                 }
             }
         }
     }
-
     post {
-        always {
-            sh 'docker-compose ps'
+        success {
+            echo "Deployment completed successfully."
         }
         failure {
-            sh 'docker-compose logs'
+            echo "Deployment failed."
+            sh 'docker-compose logs backend'
+            sh 'docker-compose logs frontend'
+            sh 'ls -la backend/myproject/'
         }
     }
 }

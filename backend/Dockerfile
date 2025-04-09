@@ -1,21 +1,22 @@
+# Use a slim Python image for a smaller footprint
 FROM python:3.11-slim
 
-WORKDIR /app
+# Set the working directory
+WORKDIR /app/myproject
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy and install Python dependencies first for caching
+# Copy and install dependencies first to leverage Docker caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
+# Copy the Django project files
+COPY myproject/ .
 
-# Set up the entrypoint
+# Copy the init-superuser.sh script and make it executable
+COPY init-superuser.sh .
 RUN chmod +x init-superuser.sh
 
+# Expose the port for the Django server
 EXPOSE 8000
-CMD ["./init-superuser.sh"]
+
+# Run the init-superuser script and start the Django server
+CMD ["/bin/bash", "-c", "/app/myproject/init-superuser.sh && python manage.py runserver 0.0.0.0:8000"]
