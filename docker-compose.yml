@@ -1,37 +1,14 @@
 services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "5000:5000"
-    depends_on:
-      - backend
-    networks:
-      - mynetwork
-
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    build: ./backend
+    volumes:
+      - ./backend:/app
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend/myproject:/app/myproject
-      - db_data:/app/myproject/db.sqlite3
-    networks:
-      - mynetwork
-    working_dir: /app/myproject
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
-volumes:
-  db_data:
-
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
 networks:
   mynetwork:
     driver: bridge

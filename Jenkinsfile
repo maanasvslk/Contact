@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     // Clean up any existing containers
-                    sh 'docker-compose down --remove-orphans || true'
+                    sh 'docker-compose down --remove-orphans --volumes || true'
 
                     // Build the images
                     sh 'docker-compose build'
@@ -18,41 +18,42 @@ pipeline {
                     // Start the services in detached mode
                     sh 'docker-compose up -d'
 
-                    // Wait for backend to be healthy
+                    // Wait for backend to be up (check HTTP response)
                     sh '''
                         for i in {1..30}; do
-                            STATUS=$(docker inspect --format='{{.State.Health.Status}}' contact-backend-1 || echo "not_running")
-                            echo "Backend status: $STATUS"
-                            if [ "$STATUS" = "healthy" ]; then
-                                echo "Backend is healthy!"
+                            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/admin/ || echo "0")
+                            echo "Backend HTTP status: $STATUS"
+                            if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
+                                echo "Backend is up and running!"
                                 break
                             fi
-                            if [ "$STATUS" = "not_running" ]; then
-                                echo "Backend container is not running!"
-                                docker-compose logs backend
-                                exit 1
-                            fi
-                            echo "Waiting for backend to be healthy..."
+                            echo "Waiting for backend to be up..."
                             sleep 5
                         done
-                        if [ "$STATUS" != "healthy" ]; then
-                            echo "Backend failed to become healthy!"
+                        if [ "$STATUS" != "200" ] && [ "$STATUS" != "302" ]; then
+                            echo "Backend failed to start!"
                             docker-compose logs backend
                             exit 1
                         fi
                     '''
 
-                    // Run migrations
+                    // Wait for frontend to be up (check HTTP response)
                     sh '''
-                        docker-compose exec -T backend bash -c \
-                            "python manage.py migrate"
-                    '''
-
-                    // Create superuser using the init script
-                    sh '''
-                        docker-compose exec -T backend bash -c \
-                            "chmod +x /app/myproject/init-superuser.sh && \
-                            /app/myproject/init-superuser.sh"
+                        for i in {1..30}; do
+                            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/ || echo "0")
+                            echo "Frontend HTTP status: $STATUS"
+                            if [ "$STATUS" = "200" ]; then
+                                echo "Frontend is up and running!"
+                                break
+                            fi
+                            echo "Waiting for frontend to be up..."
+                            sleep 5
+                        done
+                        if [ "$STATUS" != "200" ]; then
+                            echo "Frontend failed to start!"
+                            docker-compose logs frontend
+                            exit 1
+                        fi
                     '''
 
                     // Verify the database file
@@ -68,6 +69,7 @@ pipeline {
         failure {
             echo "Deployment failed."
             sh 'docker-compose logs backend'
+            sh 'docker-compose logs frontend'
             sh 'ls -la backend/myproject/'
         }
     }

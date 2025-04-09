@@ -2,10 +2,9 @@ FROM python:3.11-slim
 WORKDIR /app/myproject
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install gunicorn
 COPY myproject/ .
 COPY init-superuser.sh .
 RUN chmod +x init-superuser.sh
-ENV PYTHONPATH=/app/myproject
 EXPOSE 8000
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "myproject.wsgi:application"]
+# Run init-superuser.sh then start Django runserver
+CMD ["/bin/bash", "-c", "/app/init-superuser.sh && python manage.py runserver 0.0.0.0:8000"]
