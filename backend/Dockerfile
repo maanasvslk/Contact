@@ -11,7 +11,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the Django project files
 COPY myproject/ .
 
-# Run migrations to create an initial db.sqlite3 file
+# Remove any existing db.sqlite3 file to ensure a fresh database
+RUN rm -f db.sqlite3
+
+# Run migrations to create a fresh db.sqlite3 file
 RUN python manage.py migrate
 
 # Copy the init-superuser.sh script and make it executable

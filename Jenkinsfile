@@ -22,10 +22,10 @@ pipeline {
                     sh '''
                         for i in {1..60}; do
                             # Try localhost first
-                            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/admin/ || echo "0")
-                            echo "Backend HTTP status (localhost): $STATUS"
+                            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8001/admin/ || echo "0")
+                            echo "Backend HTTP status (localhost:8001): $STATUS"
                             if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
-                                echo "Backend is up and running on localhost!"
+                                echo "Backend is up and running on localhost:8001!"
                                 break
                             fi
 

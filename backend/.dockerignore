@@ -16,9 +16,8 @@ venv/
 .git
 .gitignore
 
-# Allow an initial db.sqlite3 file, but ignore it in the container
-# Commenting out to allow initial db.sqlite3 if it exists
-# db.sqlite3
+# Ignore database files
+db.sqlite3
 
 # Ignore logs and temporary files
 *.log
