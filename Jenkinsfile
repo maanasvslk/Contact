@@ -1,29 +1,43 @@
 pipeline {
     agent any
+
+    environment {
+        DOCKER_BUILDKIT = 1
+    }
+
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
         }
+
         stage('Build and Deploy') {
             steps {
-                script {
-                    timeout(time: 35, unit: 'SECONDS') {
+                timeout(time: 120, unit: 'SECONDS') {
+                    script {
                         sh 'docker-compose down --remove-orphans --volumes || true'
                         sh 'docker-compose build --no-cache'
                         sh 'docker-compose up -d'
 
-                        // Quicker health check
+                        // Health checks
                         sh '''
-                            for i in {1..7}; do  # 7 tries * 3s = 21s max
+                            for i in {1..10}; do
                                 if curl -s -f http://localhost:8000/admin/; then
                                     echo "Backend is up!"
+                                    break
+                                fi
+                                sleep 5
+                            done
+
+                            for i in {1..10}; do
+                                if curl -s -f http://localhost:3000; then
+                                    echo "Frontend is up!"
                                     exit 0
                                 fi
-                                sleep 3
+                                sleep 5
                             done
-                            echo "Backend failed to start!"
+                            echo "Services failed to start!"
                             exit 1
                         '''
                     }
@@ -31,15 +45,13 @@ pipeline {
             }
         }
     }
+
     post {
-        success {
-            echo "Deployment completed successfully."
+        always {
+            sh 'docker-compose ps'
         }
         failure {
-            echo "Deployment failed."
-            sh 'docker-compose logs backend'
-            sh 'docker-compose logs frontend'
-            sh 'ls -la backend/myproject/'
+            sh 'docker-compose logs'
         }
     }
 }

@@ -1,14 +1,28 @@
+version: '3.8'
+
 services:
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     volumes:
-      - ./backend/myproject:/app/myproject  # Only mount the Django project directory
+      - ./backend/myproject:/app/myproject
     ports:
       - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
 networks:
-  mynetwork:
+  default:
     driver: bridge

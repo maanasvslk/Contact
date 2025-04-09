@@ -1,12 +1,12 @@
-FROM node:18-slim AS build
+# Build stage
+FROM node:18-slim as build
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package*.json ./
 RUN npm install
-COPY src/ ./src/
-COPY public/ ./public/
-COPY postcss.config.js tailwind.config.js ./
+COPY . .
 RUN npm run build
 
+# Production stage
 FROM node:18-slim
 WORKDIR /app
 COPY --from=build /app/build ./build

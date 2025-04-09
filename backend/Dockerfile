@@ -1,15 +1,20 @@
-# backend/Dockerfile
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# First copy only requirements to cache the pip install step
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy and install Python dependencies first for caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Then copy the rest
+# Copy application code
 COPY . .
 
+# Set up the entrypoint
 RUN chmod +x init-superuser.sh
 
 EXPOSE 8000
