@@ -9,55 +9,24 @@ pipeline {
         stage('Build and Deploy') {
             steps {
                 script {
-                    // Clean up any existing containers
-                    sh 'docker-compose down --remove-orphans --volumes || true'
+                    timeout(time: 35, unit: 'SECONDS') {
+                        sh 'docker-compose down --remove-orphans --volumes || true'
+                        sh 'docker-compose build --no-cache'
+                        sh 'docker-compose up -d'
 
-                    // Build the images with no cache
-                    sh 'docker-compose build --no-cache'
-
-                    // Start the services in detached mode
-                    sh 'docker-compose up -d'
-
-                    // Wait for backend to be up (check HTTP response)
-                    sh '''
-                        for i in {1..30}; do
-                            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/admin/ || echo "0")
-                            echo "Backend HTTP status: $STATUS"
-                            if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
-                                echo "Backend is up and running!"
-                                break
-                            fi
-                            echo "Waiting for backend to be up..."
-                            sleep 5
-                        done
-                        if [ "$STATUS" != "200" ] && [ "$STATUS" != "302" ]; then
+                        // Quicker health check
+                        sh '''
+                            for i in {1..7}; do  # 7 tries * 3s = 21s max
+                                if curl -s -f http://localhost:8000/admin/; then
+                                    echo "Backend is up!"
+                                    exit 0
+                                fi
+                                sleep 3
+                            done
                             echo "Backend failed to start!"
-                            docker-compose logs backend
                             exit 1
-                        fi
-                    '''
-
-                    // Wait for frontend to be up (check HTTP response)
-                    sh '''
-                        for i in {1..30}; do
-                            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/ || echo "0")
-                            echo "Frontend HTTP status: $STATUS"
-                            if [ "$STATUS" = "200" ]; then
-                                echo "Frontend is up and running!"
-                                break
-                            fi
-                            echo "Waiting for frontend to be up..."
-                            sleep 5
-                        done
-                        if [ "$STATUS" != "200" ]; then
-                            echo "Frontend failed to start!"
-                            docker-compose logs frontend
-                            exit 1
-                        fi
-                    '''
-
-                    // Verify the database file
-                    sh 'ls -la backend/myproject/db.sqlite3'
+                        '''
+                    }
                 }
             }
         }

@@ -1,13 +1,15 @@
 #!/bin/bash
 set -e
 
-# No need to wait for PostgreSQL anymore
-echo "Applying migrations..."
-python manage.py makemigrations
-python manage.py migrate
+# Start server in background
+python myproject/manage.py runserver 0.0.0.0:8000 &
 
-echo "Creating superuser..."
-python manage.py shell <<EOF
+# Wait for server to be ready
+sleep 5
+
+# Run migrations and create superuser
+python myproject/manage.py migrate
+python myproject/manage.py shell <<EOF
 from django.contrib.auth import get_user_model
 User = get_user_model()
 if not User.objects.filter(username='admin').exists():
@@ -16,3 +18,6 @@ if not User.objects.filter(username='admin').exists():
 else:
     print("Superuser already exists, skipping creation.")
 EOF
+
+# Keep container running
+wait
