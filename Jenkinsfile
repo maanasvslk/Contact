@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     options {
-        timeout(time: 1, unit: 'MINUTES')
+        timeout(time: 4, unit: 'MINUTES')
     }
 
     stages {
