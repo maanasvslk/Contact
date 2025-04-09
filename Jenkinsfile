@@ -37,7 +37,8 @@ pipeline {
                                 break
                             fi
 
-                            echo "Waiting for backend to be up..."
+                            echo "Waiting for backend to be up... (attempt $i of 60)"
+                            docker ps -a --filter "name=contact-backend-1" --format "{{.Status}}"
                             sleep 5
                         done
                         if [ "$STATUS" != "200" ] && [ "$STATUS" != "302" ]; then

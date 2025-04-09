@@ -17,12 +17,12 @@ RUN rm -f db.sqlite3
 # Run migrations to create a fresh db.sqlite3 file
 RUN python manage.py migrate
 
+# Ensure the working directory is writable for the database
+RUN chmod -R 777 /app/myproject
+
 # Copy the init-superuser.sh script and make it executable
 COPY init-superuser.sh .
 RUN chmod +x init-superuser.sh
-
-# Ensure the working directory is writable for the database
-RUN chmod -R 777 /app/myproject
 
 # Expose the port for the Django server
 EXPOSE 8000
