@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_PASSWORD=maanas6114
+      - DJANGO_SUPERUSER_EMAIL=vslk.maanas@example.com
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
