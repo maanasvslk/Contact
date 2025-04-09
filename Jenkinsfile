@@ -18,22 +18,22 @@ pipeline {
                     // Start the services in detached mode
                     sh 'docker-compose up -d'
 
-                    // Wait for backend to be up (check HTTP response)
+                    // Wait for backend to be up (check HTTP response from within the network)
                     sh '''
                         for i in {1..60}; do
-                            # Try localhost first
+                            # Run curl from a container on the same network
+                            STATUS=$(docker run --rm --network contact_mynetwork curlimages/curl:8.10.1 curl -s -o /dev/null -w "%{http_code}" http://contact-backend-1:8000/admin/ || echo "0")
+                            echo "Backend HTTP status (contact-backend-1): $STATUS"
+                            if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
+                                echo "Backend is up and running on contact-backend-1!"
+                                break
+                            fi
+
+                            # Also try localhost:8001
                             STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8001/admin/ || echo "0")
                             echo "Backend HTTP status (localhost:8001): $STATUS"
                             if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
                                 echo "Backend is up and running on localhost:8001!"
-                                break
-                            fi
-
-                            # If localhost fails, try the container hostname
-                            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://contact-backend-1:8000/admin/ || echo "0")
-                            echo "Backend HTTP status (contact-backend-1): $STATUS"
-                            if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
-                                echo "Backend is up and running on contact-backend-1!"
                                 break
                             fi
 
@@ -66,8 +66,11 @@ pipeline {
                         fi
                     '''
 
-                    // Verify the database file
-                    sh 'ls -la backend/myproject/db.sqlite3 || echo "Database file not found."'
+                    // Verify the database file by copying it from the container
+                    sh '''
+                        docker cp contact-backend-1:/app/myproject/db.sqlite3 backend/myproject/db.sqlite3 || echo "Failed to copy db.sqlite3 from container."
+                        ls -la backend/myproject/db.sqlite3 || echo "Database file not found."
+                    '''
                 }
             }
         }

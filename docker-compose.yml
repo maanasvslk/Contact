@@ -2,9 +2,11 @@ services:
   backend:
     build: ./backend
     ports:
-      - "8001:8000"  # Change host port to 8001 to avoid conflicts
+      - "8000:8000"
     networks:
       - mynetwork
+    volumes:
+      - ./backend/myproject/db.sqlite3:/app/myproject/db.sqlite3
 
   frontend:
     build: ./frontend

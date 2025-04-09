@@ -27,5 +27,5 @@ RUN chmod -R 777 /app/myproject
 # Expose the port for the Django server
 EXPOSE 8000
 
-# Run the init-superuser script and start the Django server
+# Run the init-superuser script and start the Django server, explicitly binding to 0.0.0.0
 CMD ["/bin/bash", "-c", "/app/myproject/init-superuser.sh && python manage.py runserver 0.0.0.0:8000"]
