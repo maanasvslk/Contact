@@ -17,6 +17,7 @@ pipeline {
             steps {
                 // Ensure the container is started and run migrations in the correct container
                 sh 'docker exec contact-backend-1 python /app/myproject/manage.py migrate'
+                sh 'docker exec contact-backend-1 python /app/myproject/create_superuser.py'
             }
         }
     }
