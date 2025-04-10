@@ -1,16 +1,34 @@
+# models.py
+
 from django.db import models
-from utils.versioning import get_current_version
-# Create your models here.
 
-
-class ContactMessage(models.Model):
-    name = models.CharField(max_length=100)
+# Base class for common fields
+class BaseContactMessage(models.Model):
+    name = models.CharField(max_length=255)
     email = models.EmailField()
-    phone_number = models.CharField(max_length=20, blank=True, null=True)  # New in v2
-    address = models.TextField(blank=True, null=True)  # New in v2
     message = models.TextField()
-    submitted_at = models.DateTimeField(auto_now_add= True)
-    version = models.CharField(max_length=10, default=get_current_version)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    version = models.CharField(max_length=10)
 
-    def __str__(self):
-        return f"{self.name} - {self.email}"
+    class Meta:
+        abstract = True
+
+# Model for the 'default' database (without phone_number and address)
+class ContactMessageDefault(BaseContactMessage):
+    class Meta:
+        db_table = 'contact_message'
+        app_label = 'your_app'
+        verbose_name = 'Contact Message (default)'
+        verbose_name_plural = 'Contact Messages (default)'
+
+# Model for the 'v2' database (with phone_number and address)
+class ContactMessageV2(BaseContactMessage):
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
+    address = models.TextField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'contact_message'
+        app_label = 'your_app'
+        verbose_name = 'Contact Message (v2)'
+        verbose_name_plural = 'Contact Messages (v2)'
+        using = 'v2'  # Specify the v2 database

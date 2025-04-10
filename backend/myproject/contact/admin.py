@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.urls import path
-from .models import ContactMessage
+from .models import ContactMessageDefault, ContactMessageV2
 
 User = get_user_model()
 
@@ -26,29 +26,14 @@ class CustomAdminSite(admin.AdminSite):
 admin_site = CustomAdminSite(name='custom_admin')
 admin_site.register(User)
 
-@admin.register(ContactMessage, site=admin_site)
-class ContactMessageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'message', 'submitted_at', 'version')  # No phone and address in default
+@admin.register(ContactMessageDefault)
+class ContactMessageDefaultAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'message', 'submitted_at', 'version')
+    list_filter = ('submitted_at', 'version')
+    search_fields = ('name', 'email', 'message')
+
+@admin.register(ContactMessageV2)
+class ContactMessageV2Admin(admin.ModelAdmin):
+    list_display = ('name', 'email','phone_number', 'address', 'message', 'submitted_at', 'version')
     list_filter = ('submitted_at', 'version')
     search_fields = ('name', 'email', 'message', 'phone_number', 'address')
-
-    def get_queryset(self, request):
-        # Fetch messages from both databases
-        default_messages = ContactMessage.objects.using('default').all()
-        v2_messages = ContactMessage.objects.using('v2').all()
-
-        all_messages = {
-            'default': default_messages,
-            'v2': v2_messages
-        }
-
-        return all_messages
-
-    def changelist_view(self, request, extra_context=None):
-        extra_context = extra_context or {}
-        all_messages = self.get_queryset(request)
-
-        # Pass the grouped messages (by db_name) to the template
-        extra_context['all_messages'] = all_messages
-
-        return super().changelist_view(request, extra_context=extra_context)
