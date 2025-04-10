@@ -15,7 +15,7 @@ class CustomAdminSite(admin.AdminSite):
         return urls + custom_urls
 
     def databases_view(self, request):
-        # Simplified to show only default database users
+        # Simplified to show users for both databases
         users = User.objects.values_list('username', 'email')
         user_list = ", ".join([f"{user[0]} ({user[1]})" for user in users])
         html = "<h1>Database Users</h1><table border='1'><tr><th>Database</th><th>Users</th></tr>"
@@ -28,9 +28,27 @@ admin_site.register(User)
 
 @admin.register(ContactMessage, site=admin_site)
 class ContactMessageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'message', 'submitted_at')
-    list_filter = ('submitted_at',)
-    search_fields = ('name', 'email', 'message')
+    list_display = ('name', 'email', 'message', 'submitted_at', 'version')  # No phone and address in default
+    list_filter = ('submitted_at', 'version')
+    search_fields = ('name', 'email', 'message', 'phone_number', 'address')
 
-    # Remove the custom get_queryset methods since we only need default database
-    # get_queryset and changelist_view can use default implementations
+    def get_queryset(self, request):
+        # Fetch messages from both databases
+        default_messages = ContactMessage.objects.using('default').all()
+        v2_messages = ContactMessage.objects.using('v2').all()
+
+        all_messages = {
+            'default': default_messages,
+            'v2': v2_messages
+        }
+
+        return all_messages
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        all_messages = self.get_queryset(request)
+
+        # Pass the grouped messages (by db_name) to the template
+        extra_context['all_messages'] = all_messages
+
+        return super().changelist_view(request, extra_context=extra_context)

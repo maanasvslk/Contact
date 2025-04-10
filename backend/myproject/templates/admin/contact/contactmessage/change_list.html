@@ -2,27 +2,40 @@
 
 {% block result_list %}
   <h2>All Messages Across Databases</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Database</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Message</th>
-        <th>Submitted At</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for db_name, msg in all_messages %}
+
+  <!-- Loop through each database version group -->
+  {% for db_name, messages in all_messages.items %}
+    <h3>Messages in {{ db_name|capfirst }} Database</h3>
+    <table>
+      <thead>
         <tr>
-          <td>{{ db_name }}</td>
-          <td>{{ msg.name }}</td>
-          <td>{{ msg.email }}</td>
-          <td>{{ msg.message }}</td>
-          <td>{{ msg.submitted_at }}</td>
+          <th>Name</th>
+          <th>Email</th>
+          {% if db_name == 'v2' %}
+            <th>Phone Number</th>
+            <th>Address</th>
+          {% endif %}
+          <th>Message</th>
+          <th>Submitted At</th>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <!-- Loop through the messages for this database -->
+        {% for msg in messages %}
+          <tr>
+            <td>{{ msg.name }}</td>
+            <td>{{ msg.email }}</td>
+            {% if db_name == 'v2' %}
+              <td>{{ msg.phone_number }}</td>
+              <td>{{ msg.address }}</td>
+            {% endif %}
+            <td>{{ msg.message }}</td>
+            <td>{{ msg.submitted_at }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endfor %}
+
   {{ block.super }}
 {% endblock %}
