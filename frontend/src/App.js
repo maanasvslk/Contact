@@ -4,8 +4,8 @@ import axios from 'axios';
 function App() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [address, setAddress] = useState('');
+  // const [phoneNumber, setPhoneNumber] = useState('');
+  // const [address, setAddress] = useState('');
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
@@ -14,8 +14,8 @@ function App() {
     const formData = {
       name,
       email,
-      phone_number: phoneNumber,
-      address,
+      // phone_number: phoneNumber,
+      // address,
       message,
     };
 
@@ -24,8 +24,8 @@ function App() {
       alert('Message sent successfully!');
       setName('');
       setEmail('');
-      setPhoneNumber('');
-      setAddress('');
+      // setPhoneNumber('');
+      // setAddress('');
       setMessage('');
     } catch (error) {
       console.error(error);
@@ -54,20 +54,20 @@ function App() {
             required
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <input
-            type="text"
-            placeholder="Phone Number"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <textarea
-            placeholder="Address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            rows="2"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          ></textarea>
+          {/*<input*/}
+          {/*  type="text"*/}
+          {/*  placeholder="Phone Number"*/}
+          {/*  value={phoneNumber}*/}
+          {/*  onChange={(e) => setPhoneNumber(e.target.value)}*/}
+          {/*  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"*/}
+          {/*/>*/}
+          {/*<textarea*/}
+          {/*  placeholder="Address"*/}
+          {/*  value={address}*/}
+          {/*  onChange={(e) => setAddress(e.target.value)}*/}
+          {/*  rows="2"*/}
+          {/*  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"*/}
+          {/*></textarea>*/}
           <textarea
             placeholder="Your Message"
             value={message}
