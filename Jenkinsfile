@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Run Migrations') {
             steps {
-                //  Ensure the container is started and run migrations in the correct container
+                // Ensure the container is started and run migrations in the correct container
                 sh 'docker exec contact-backend-1 python /app/myproject/manage.py migrate'
                 sh 'docker exec -e DJANGO_SETTINGS_MODULE=myproject.settings contact-backend-1 python /app/myproject/create_superuser.py'
             }
