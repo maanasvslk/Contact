@@ -4,13 +4,16 @@ pipeline {
         timeout(time: 10, unit: 'MINUTES')
     }
     environment {
-        APP_VERSION = '2'
+        APP_VERSION = '1' // Change this to switch versions
     }
     stages {
         stage('Stop and Clean') {
             steps {
-                sh 'docker-compose down --volumes || true'
-                sh 'docker volume rm -f cd-project_postgres_data || true'
+                // Remove containers but KEEP volumes
+                sh 'docker-compose down || true'
+
+                // Only remove the backend volumes if needed
+                sh 'docker volume rm -f cd-project_node_modules || true'
             }
         }
         stage('Build') {
@@ -26,8 +29,6 @@ pipeline {
                         'http://127.0.0.1:8000/' :
                         'http://127.0.0.1:8000/v2/'
                     echo "Deployed version ${env.APP_VERSION} at ${url}"
-
-                    // Wait for containers to be fully up
                     sleep(time: 10, unit: 'SECONDS')
                 }
             }
