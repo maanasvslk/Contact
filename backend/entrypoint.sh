@@ -7,6 +7,11 @@ export PYTHONPATH=/app/myproject
 # Change to Django project directory
 cd /app/myproject
 
+echo "Making migrations..."
+python manage.py makemigrations
+python manage.py makemigrations contact
+python manage.py makemigrations contact_v2
+
 echo "Running migrations..."
 python manage.py migrate --noinput
 python manage.py migrate contact --database=contact_1 --noinput
