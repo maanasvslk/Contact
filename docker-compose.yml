@@ -45,7 +45,7 @@ services:
   nagios:
     image: jasonrivers/nagios:latest
     ports:
-      - "8081:80"  # Changed from 8080 to 8081
+      - "8082:80"
     volumes:
       - nagios_data:/opt/nagios/etc
       - nagios_var:/opt/nagios/var
