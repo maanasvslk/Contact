@@ -4,12 +4,12 @@ pipeline {
         timeout(time: 10, unit: 'MINUTES')  // More generous timeout
     }
     environment {
-        APP_VERSION = '2'  // Hardcoded version
+        APP_VERSION = '1'  // Hardcoded version
     }
     stages {
         stage('Stop Existing Containers') {
             steps {
-                sh 'docker-compose down -v || true'  // -v removes volumes but skips image pruning
+                sh 'docker-compose down || true'  // -v removes volumes but skips image pruning
             }
         }
         stage('Build') {
