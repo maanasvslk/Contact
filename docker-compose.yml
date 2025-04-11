@@ -1,13 +1,10 @@
-version: '3.8'
 services:
   backend:
     build: ./backend
     ports:
       - "8000:8000"
     volumes:
-      - C:/JenkinsData/jenkins_home/workspace/Contact/backend/myproject:/app/myproject
+      - ./backend/myproject:/app/myproject
     environment:
-      - DJANGO_SETTINGS_MODULE=myproject.settings
-      - DJANGO_SUPERUSER_USERNAME=admin
-      - DJANGO_SUPERUSER_PASSWORD=maanas6114
-      - DJANGO_SUPERUSER_EMAIL=vslk.maanas@example.com
+      - DJANGO_SETTINGS_MODULE=myproject.settings  # Updated path
+      - PYTHONPATH=/app/myproject 

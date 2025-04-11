@@ -3,41 +3,62 @@ pipeline {
     options {
         timeout(time: 4, unit: 'MINUTES')
     }
+    environment {
+        // Hardcode your version choice here (either '1' or '2')
+        APP_VERSION = '1'  // Change this to '2' if you want version 2
+    }
     stages {
-        stage('Build and Deploy with Docker Compose') {
+        stage('Cleanup') {
             steps {
-                sh 'docker-compose down'
-                sh 'docker-compose build'
-                sh 'docker-compose up -d'
-                sh '''
-                    for i in {1..30}; do
-                        if docker ps | grep -q cd-project-backend-1; then
-                            echo "Container is running"
-                            break
-                        fi
-                        echo "Waiting for container... ($i/30)"
-                        sleep 2
-                    done
-                    docker ps | grep cd-project-backend-1 || (echo "Container failed to start" && exit 1)
-                '''
+                sh 'docker-compose down --remove-orphans --volumes || true'
             }
         }
-        stage('Run Superuser Creation') {
+        stage('Build') {
             steps {
-                sh 'docker exec -e DJANGO_SETTINGS_MODULE=myproject.settings cd-project-backend-1 python /app/myproject/create_superuser.py'
+                sh 'docker-compose build --no-cache'
             }
         }
-        stage('Post-Deployment') {
+        stage('Deploy') {
             steps {
                 script {
-                    def APP_VERSION = '1'
-                    if (APP_VERSION == '1') {
-                        echo 'Deployment successful! Access the app at: http://127.0.0.1:8000'
-                    } else if (APP_VERSION == '2') {
-                        echo 'Deployment successful! Access the app at: http://127.0.0.1:8000/v2'
+                    if (env.APP_VERSION == '1') {
+                        // Deploy version 1
+                        sh 'docker-compose up -d backend'
+                        echo 'Deploying version 1 at http://127.0.0.1:8000/'
+                    } else {
+                        // Deploy version 2
+                        sh 'docker-compose up -d backend'
+                        echo 'Deploying version 2 at http://127.0.0.1:8000/v2/'
                     }
                 }
             }
+        }
+        stage('Verify Deployment') {
+            steps {
+                script {
+                    if (env.APP_VERSION == '1') {
+                        sh 'curl -sSf http://localhost:8000/ -o /dev/null || (echo "Version 1 not responding" && exit 1)'
+                    } else {
+                        sh 'curl -sSf http://localhost:8000/v2/ -o /dev/null || (echo "Version 2 not responding" && exit 1)'
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            script {
+                if (env.APP_VERSION == '1') {
+                    echo 'Deployment successful! Access version 1 at: http://127.0.0.1:8000/'
+                } else {
+                    echo 'Deployment successful! Access version 2 at: http://127.0.0.1:8000/v2/'
+                }
+            }
+        }
+        failure {
+            echo 'Deployment failed! Check logs for details.'
+            sh 'docker-compose logs --no-color > failure.log'
+            archiveArtifacts artifacts: 'failure.log', fingerprint: true
         }
     }
 }
