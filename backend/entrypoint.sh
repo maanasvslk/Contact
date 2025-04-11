@@ -1,5 +1,3 @@
-# entrypoint.sh
-
 #!/bin/sh
 set -e
 
@@ -15,7 +13,6 @@ python manage.py migrate contact --database=contact_1 --noinput
 python manage.py migrate contact_v2 --database=contact_v2 --noinput
 
 echo "Creating superuser..."
-# Run from project directory with proper environment
 DJANGO_SETTINGS_MODULE=myproject.settings python /app/create_superuser.py
 
 echo "Starting server..."
