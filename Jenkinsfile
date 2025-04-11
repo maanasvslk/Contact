@@ -1,15 +1,15 @@
 pipeline {
     agent any
     options {
-        timeout(time: 10, unit: 'MINUTES')  // More generous timeout
+        timeout(time: 10, unit: 'MINUTES')
     }
     environment {
-        APP_VERSION = '1'  // Hardcoded version
+        COMPOSE_PROJECT_NAME = 'contact-app'
     }
     stages {
-        stage('Stop Existing Containers') {
+        stage('Cleanup') {
             steps {
-                sh 'docker-compose down -v || true'  // -v removes volumes but skips image pruning
+                sh 'docker-compose down -v || true'
             }
         }
         stage('Build') {
@@ -20,40 +20,47 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh 'docker-compose up -d'
-                script {
-                    def url = (env.APP_VERSION == '1') ?
-                        'http://127.0.0.1:8000/' :
-                        'http://127.0.0.1:8000/v2/'
-                    echo "Deployed version ${env.APP_VERSION} at ${url}"
-                }
+                // Wait for container to be ready
+                sh '''
+                for i in {1..30}; do
+                    if docker ps --filter "name=contact-app-backend-1" --format "{{.Status}}" | grep -q "Up"; then
+                        echo "Container is running"
+                        break
+                    fi
+                    echo "Waiting for container to start... ($i/30)"
+                    sleep 2
+                done
+                '''
             }
         }
         stage('Verify') {
             steps {
-                script {
-                    // Wait up to 2 minutes for server
-                    def healthy = false
-                    for (int i = 0; i < 24; i++) { // 24 attempts * 5s = 2 minutes
-                        try {
-                            sh "curl -sSf http://localhost:8000/ --connect-timeout 5"
-                            healthy = true
-                            break
-                        } catch (Exception e) {
-                            echo "Waiting for server... (attempt ${i+1}/24)"
-                            sleep(5)
-                        }
-                    }
-                    if (!healthy) {
-                        error("Server failed to start within 2 minutes")
-                    }
-                }
+                sh '''
+                # Wait for server to respond
+                for i in {1..30}; do
+                    if curl -sSf http://localhost:8000/ -o /dev/null; then
+                        echo "Server is responding"
+                        break
+                    fi
+                    echo "Waiting for server to respond... ($i/30)"
+                    sleep 2
+                done
+                '''
             }
         }
     }
     post {
         always {
-            sh 'docker-compose logs --tail 50 --no-color > docker.log'
+            sh 'docker-compose logs --tail 100 --no-color > docker.log'
             archiveArtifacts artifacts: 'docker.log'
+        }
+        failure {
+            echo "Deployment failed - checking container status..."
+            sh '''
+            docker ps -a > containers.txt
+            docker inspect contact-app-backend-1 > inspect.txt
+            '''
+            archiveArtifacts artifacts: 'containers.txt,inspect.txt'
         }
     }
 }

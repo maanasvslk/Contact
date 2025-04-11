@@ -1,15 +1,19 @@
 FROM python:3.10-slim
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
+# Set working directory
 WORKDIR /app
 
+# Copy requirements first for caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the entire backend directory
 COPY . .
 
-RUN chmod +x entrypoint.sh
+# Make entrypoint executable
+RUN chmod +x /app/entrypoint.sh
+
+# Set the working directory to your Django project
+WORKDIR /app/myproject
 
 ENTRYPOINT ["/app/entrypoint.sh"]

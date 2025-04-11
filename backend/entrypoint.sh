@@ -1,10 +1,6 @@
 #!/bin/sh
 set -e
 
-echo "Waiting for Django to initialize..."
-sleep 5
-
-# Run from /app/myproject (set in Dockerfile)
 echo "Running migrations..."
 python manage.py migrate --noinput
 python manage.py migrate contact --database=contact_1 --noinput
