@@ -24,7 +24,7 @@ pipeline {
         }
         stage('Run Superuser Creation') {
             steps {
-                sh 'docker exec -e DJANGO_SETTINGS_MODULE=myproject.myproject.settings cd-project-backend-1 python /app/myproject/create_superuser.py'  # Updated path
+                sh 'docker exec -e DJANGO_SETTINGS_MODULE=myproject.myproject.settings cd-project-backend-1 python /app/myproject/create_superuser.py'
             }
         }
         stage('Post-Deployment') {
