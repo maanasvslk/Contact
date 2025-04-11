@@ -4,7 +4,7 @@ pipeline {
         timeout(time: 10, unit: 'MINUTES')  // More generous timeout
     }
     environment {
-        APP_VERSION = '1'  // Hardcoded version
+        APP_VERSION = '2'  // Hardcoded version
     }
     stages {
         stage('Stop Existing Containers') {
@@ -26,21 +26,6 @@ pipeline {
                         'http://127.0.0.1:8000/v2/'
                     echo "Deployed version ${env.APP_VERSION} at ${url}"
                 }
-            }
-        }
-        stage('Verify') {
-            steps {
-                sh '''
-                # Check container status
-                docker ps -a
-                # Get logs
-                docker-compose logs --tail=100
-                # Check if server is running
-                curl -v http://localhost:8000 || true
-                # Check files in container
-                docker exec -it $(docker-compose ps -q backend) ls -la /app
-                docker exec -it $(docker-compose ps -q backend) ls -la /app/myproject
-                '''
             }
         }
     }
