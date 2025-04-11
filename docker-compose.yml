@@ -8,14 +8,14 @@ services:
       - "8000:8000"
     environment:
       - DJANGO_SETTINGS_MODULE=myproject.settings
-      - PYTHONPATH=/app:/app/myproject  # Updated PYTHONPATH
+      - PYTHONPATH=/app:/app/myproject
       - APP_VERSION=${APP_VERSION}
       - DB_HOST=db
       - DB_PORT=5432
       - DB_NAME=mydatabase
       - DB_USER=myuser
       - DB_PASSWORD=mypassword
-    working_dir: /app/myproject  # Ensure correct working directory
+    working_dir: /app/myproject
     depends_on:
       db:
         condition: service_healthy
@@ -29,7 +29,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
+      test: ["CMD-SHELL", "PGPASSWORD=mypassword pg_isready -U myuser -d mydatabase"]
       interval: 5s
       timeout: 5s
       retries: 10

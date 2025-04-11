@@ -3,7 +3,7 @@ set -e
 
 cd /app/myproject
 
-# Wait for PostgreSQL
+# Wait for PostgreSQL with password
 timeout 60 bash -c "until PGPASSWORD=$DB_PASSWORD psql -h '$DB_HOST' -U '$DB_USER' -d '$DB_NAME' -c '\q'; do
   echo 'Waiting for PostgreSQL...'
   sleep 2
@@ -12,8 +12,8 @@ done" || {
   exit 1
 }
 
-# Create schemas if they don't exist
-psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c "CREATE SCHEMA IF NOT EXISTS contact_schema; CREATE SCHEMA IF NOT EXISTS v2_schema;"
+# Create schemas with password
+PGPASSWORD=$DB_PASSWORD psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c "CREATE SCHEMA IF NOT EXISTS contact_schema; CREATE SCHEMA IF NOT EXISTS v2_schema;"
 
 # Normal migrations
 python manage.py makemigrations
