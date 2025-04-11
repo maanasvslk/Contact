@@ -5,7 +5,7 @@ from rest_framework import generics
 from .models import ContactMessage
 from .serializers import ContactMessageSerializer
 
-from django.shortcuts import redirect
+from django.shortcuts import redirect, HttpResponse
 import os
 
 
@@ -13,16 +13,16 @@ def version_redirect_view(request):
     app_version = os.environ.get('APP_VERSION', '1')
     path = request.path
 
-    # Redirect / to /v2/ only if not already at /v2/
+    # Redirect from / to /v2/
     if app_version == '2' and path == '/':
         return redirect('/v2/')
 
-    # Redirect /v2/ to / only if that's not the current version
+    # Redirect from /v2/ to /
     if app_version == '1' and path == '/v2/':
         return redirect('/')
 
-    # Otherwise, no redirect (avoids loop)
-    return None
+    # Otherwise, show a basic response instead of None
+    return HttpResponse("Version routing view: No redirect performed.")
 
 
 def contact_page(request):
