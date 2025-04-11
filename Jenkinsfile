@@ -1,15 +1,16 @@
 pipeline {
     agent any
     options {
-        timeout(time: 10, unit: 'MINUTES')  // More generous timeout
+        timeout(time: 10, unit: 'MINUTES')
     }
     environment {
-        APP_VERSION = '1'  // Hardcoded version
+        APP_VERSION = '1'
     }
     stages {
-        stage('Stop Existing Containers') {
+        stage('Stop and Clean') {
             steps {
-                sh 'docker-compose down || true'
+                sh 'docker-compose down --volumes || true'
+                sh 'docker volume rm -f cd-project_postgres_data || true'
             }
         }
         stage('Build') {
@@ -25,6 +26,9 @@ pipeline {
                         'http://127.0.0.1:8000/' :
                         'http://127.0.0.1:8000/v2/'
                     echo "Deployed version ${env.APP_VERSION} at ${url}"
+
+                    // Wait for containers to be fully up
+                    sleep(time: 10, unit: 'SECONDS')
                 }
             }
         }
