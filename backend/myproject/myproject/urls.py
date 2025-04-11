@@ -1,9 +1,11 @@
 from django.urls import path, include
 from contact.admin import admin_site
+from contact.views import contact_page
 
 
 urlpatterns = [
     path('admin/', admin_site.urls),
+    path('', contact_page, name='home'),
 
     # Only this view handles redirects based on APP_VERSION
 
