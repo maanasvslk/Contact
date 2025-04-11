@@ -1,11 +1,10 @@
-version: '3.8'  # Explicit version recommended
 services:
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     volumes:
-      - ./backend:/app  # Mount entire backend directory
+      - ./backend:/app
     ports:
       - "8000:8000"
     environment:

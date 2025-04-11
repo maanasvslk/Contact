@@ -13,7 +13,5 @@ COPY . .
 # Make entrypoint executable
 RUN chmod +x /app/entrypoint.sh
 
-# Set the working directory to your Django project
-WORKDIR /app/myproject
-
+# Entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]
