@@ -43,6 +43,7 @@ pipeline {
                 '''
             }
         }
+    }
     post {
         always {
             sh 'docker-compose logs --tail 50 --no-color > docker.log'
