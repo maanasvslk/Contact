@@ -1,10 +1,20 @@
+version: '3.8'  # Explicit version recommended
 services:
   backend:
-    build: ./backend
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app  # Better to mount entire backend directory
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend/myproject:/app/myproject
+    working_dir: /app/myproject
     environment:
-      - DJANGO_SETTINGS_MODULE=myproject.settings  # Updated path
-      - PYTHONPATH=/app/myproject 
+      - DJANGO_SETTINGS_MODULE=myproject.settings
+      - PYTHONPATH=/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
