@@ -5,7 +5,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     volumes:
-      - ./backend:/app  # Mount the entire backend directory to the container
+      - ./backend/myproject:/app/myproject
     ports:
       - "8000:8000"
     environment:
