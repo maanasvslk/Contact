@@ -6,14 +6,14 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - C:/JenkinsData/jenkins_home/workspace/Contact/backend/myproject/contact_1.db.sqlite3:/app/myproject/contact_1.db.sqlite3
+      - C:/JenkinsData/jenkins_home/workspace/Contact/backend/myproject/contact_v2.db.sqlite3:/app/myproject/contact_v2.db.sqlite3
       - C:/JenkinsData/jenkins_home/workspace/Contact/backend/myproject:/app/myproject
     environment:
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_PASSWORD=maanas6114
       - DJANGO_SUPERUSER_EMAIL=vslk.maanas@example.com
-    command: python /app/myproject/manage.py runserver 0.0.0.0:8000  # Ensure the correct location is used here
-
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:80"
+    command: >
+      sh -c "python /app/myproject/manage.py migrate contact --database=contact_1 &&
+             python /app/myproject/manage.py migrate contact_v2 --database=contact_v2 &&
+             python /app/myproject/manage.py runserver 0.0.0.0:8000"

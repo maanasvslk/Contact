@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'contact',
+    'contact_v2',
     'corsheaders',
     'rest_framework',
 ]
@@ -79,55 +80,25 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-# import os
-#
-#
-# def get_versioned_databases():
-#     base_db_config = {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'USER': 'postgres',
-#         'PASSWORD': 'maanas6114',
-#         'HOST': 'db',
-#         'PORT': '5432',
-#         'NAME': 'mydb_v1',  # Hardcoded to v1
-#     }
-#     databases = {
-#         'default': base_db_config,
-#     }
-#     return databases
 
-
-
-
-
-
-
-
-#
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'postgres',
-#         'USER': 'postgres',
-#         'PASSWORD': 'maanas6114',
-#         'HOST': 'localhost',
-#         'PORT': '5431',
-#     }
-# }
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'default.db.sqlite3',  # Use this as your primary database
+    },
+    'contact_1': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'contact_1.db.sqlite3',  # Keep this for the contact app
+    },
+    'contact_v2': {  # New database
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'contact_v2.db.sqlite3',
     }
 }
 
-# Commented
 
-# DATABASES = get_versioned_databases()
-
-
-# DATABASE_ROUTERS = ['myproject.routers.DynamicVersionDatabaseRouter']
+DATABASE_ROUTERS = ['myproject.routers.contact_1', 'myproject.routers.contact_v2']
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5000",
@@ -169,7 +140,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

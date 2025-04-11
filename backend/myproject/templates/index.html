@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-lg">
+    <h1 class="text-3xl font-semibold text-center text-blue-600">Contact Us</h1>
+    <form id="contact-form" class="space-y-4">
+      <input
+        type="text"
+        id="name"
+        placeholder="Your Name"
+        required
+        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <input
+        type="email"
+        id="email"
+        placeholder="Your Email"
+        required
+        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      {% if is_contact_v2 %}
+      <input
+        type="text"
+        id="phoneNumber"
+        placeholder="Phone Number"
+        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <textarea
+        id="address"
+        placeholder="Address"
+        rows="2"
+        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      ></textarea>
+      {% endif %}
+      <textarea
+        id="message"
+        placeholder="Your Message"
+        required
+        rows="5"
+        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      ></textarea>
+      <button
+        type="submit"
+        class="w-full p-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        Send Message
+      </button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('contact-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        {% if is_contact_v2 %}
+        phone_number: document.getElementById('phoneNumber').value,
+        address: document.getElementById('address').value,
+        {% endif %}
+        message: document.getElementById('message').value
+      };
+
+      try {
+        const response = await fetch('http://localhost:8000{% if is_contact_v2 %}/v2/contact_v2/{% else %}/api/contact/{% endif %}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          alert('Message sent successfully!');
+          document.getElementById('contact-form').reset();
+        } else {
+          throw new Error('Request failed');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Failed to send message.');
+      }
+    });
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  </script>
+</body>
+</html>

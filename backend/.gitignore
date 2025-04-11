@@ -5,6 +5,9 @@ __pycache__/
 *.pyd
 *.db
 db.sqlite3
+contact_1.db.sqlite3
+contact_v2.db.sqlite3
+default.db.sqlite3
 .env
 venv/
 
