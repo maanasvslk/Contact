@@ -10,22 +10,15 @@ pipeline {
         WORKSPACE_SQLITE_TARGET = "${env.WORKSPACE}\\backend\\myproject"
     }
     stages {
-        // NEW STAGE: Copy SQLite files before Docker starts
         stage('Prepare SQLite Databases') {
             steps {
                 script {
-                    // Create target directory if it doesn't exist
-                    bat """
-                        if not exist "${WORKSPACE_SQLITE_TARGET}" (
-                            mkdir "${WORKSPACE_SQLITE_TARGET}"
-                        )
-                    """
 
                     // Copy all SQLite files (silently overwrite if exists)
-                    bat """
-                        copy /Y "${LOCAL_SQLITE_SOURCE}\\*.sqlite3" "${WORKSPACE_SQLITE_TARGET}\\"
+                    sh """
+                        cp -f "${LOCAL_SQLITE_SOURCE}"/*.sqlite3 "${WORKSPACE_SQLITE_TARGET}/"
                         echo "Copied SQLite files:"
-                        dir "${WORKSPACE_SQLITE_TARGET}\\*.sqlite3"
+                        ls -la "${WORKSPACE_SQLITE_TARGET}"/*.sqlite3
                     """
                 }
             }
