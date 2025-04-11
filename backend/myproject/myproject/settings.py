@@ -85,15 +85,15 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'default.db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'default.db.sqlite3'),
     },
     'contact_1': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'contact_1.db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'contact_1.db.sqlite3'),
     },
     'contact_v2': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'contact_v2.db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'contact_v2.db.sqlite3'),
     },
 }
 

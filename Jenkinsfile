@@ -9,8 +9,12 @@ pipeline {
                 sh 'docker-compose down'
                 sh 'docker-compose build'
                 sh 'docker-compose up -d'
-                // Wait for container to be fully up
-                sh 'sleep 3'  // Give the container time to start
+                sh 'sleep 10'  // Increased to 20 seconds to ensure container is ready
+            }
+        }
+        stage('Check Container Status') {
+            steps {
+                sh 'docker ps -f name=cd-project-backend-1'  // Verify container is running
             }
         }
         stage('Run Migrations and Superuser') {
