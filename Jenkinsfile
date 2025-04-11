@@ -1,34 +1,12 @@
 pipeline {
     agent any
     options {
-        timeout(time: 10, unit: 'MINUTES')
+        timeout(time: 10, unit: 'MINUTES')  // More generous timeout
     }
     environment {
-        APP_VERSION = '1'
-        // Define paths (adjust as needed)
-        LOCAL_SQLITE_SOURCE = "C:\\Users\\vslkm\\OneDrive\\Desktop\\Maanas\\KLU\\3-2\\Cloud Devops\\Cloud-Devops-Project\\backend\\myproject"
-        WORKSPACE_SQLITE_TARGET = "${env.WORKSPACE}\\backend\\myproject"
+        APP_VERSION = '1'  // Hardcoded version
     }
     stages {
-        stage('Prepare SQLite Databases') {
-            steps {
-                script {
-                    // Create target directory if it doesn't exist
-                    sh """
-                        mkdir -p "${WORKSPACE_SQLITE_TARGET}"
-                    """
-
-                    // Copy all SQLite files (silently overwrite if exists)
-                    sh """
-                        cp -f "${LOCAL_SQLITE_SOURCE}"/*.sqlite3 "${WORKSPACE_SQLITE_TARGET}/"
-                        echo "Copied SQLite files:"
-                        ls -la "${WORKSPACE_SQLITE_TARGET}"/*.sqlite3
-                    """
-                }
-            }
-        }
-
-        // Existing stages below (unchanged)
         stage('Stop Existing Containers') {
             steps {
                 sh 'docker-compose down || true'
