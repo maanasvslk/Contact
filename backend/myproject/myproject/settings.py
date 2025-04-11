@@ -85,20 +85,20 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'default.db.sqlite3',  # Use this as your primary database
+        'NAME': BASE_DIR / 'default.db.sqlite3',
     },
     'contact_1': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'contact_1.db.sqlite3',  # Keep this for the contact app
+        'NAME': BASE_DIR / 'contact_1.db.sqlite3',
     },
-    'contact_v2': {  # New database
+    'contact_v2': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'contact_v2.db.sqlite3',
-    }
+    },
 }
 
-
 DATABASE_ROUTERS = ['myproject.routers.contact_1', 'myproject.routers.contact_v2']
+
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5000",
