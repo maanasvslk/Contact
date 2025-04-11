@@ -4,7 +4,7 @@ pipeline {
         timeout(time: 10, unit: 'MINUTES')  // More generous timeout
     }
     environment {
-        APP_VERSION = '1'  // Hardcoded version
+        APP_VERSION = '2'  // Hardcoded version
     }
     stages {
         stage('Stop Existing Containers') {
