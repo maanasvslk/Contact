@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+# Add /app to Python path
+export PYTHONPATH=/app
+
 echo "Running migrations..."
 python manage.py migrate --noinput
 python manage.py migrate contact --database=contact_1 --noinput
