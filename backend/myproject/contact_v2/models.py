@@ -8,5 +8,10 @@ class ContactMessageV2(models.Model):
     message = models.TextField()
     submitted_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        db_table = 'v2_schema"."contactmessagev2'  # Schema-qualified table name
+        verbose_name = 'Contact Message V2'
+        verbose_name_plural = 'Contact Messages V2'
+
     def __str__(self):
         return f"{self.name} - {self.email}"

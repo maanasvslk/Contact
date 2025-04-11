@@ -75,32 +75,19 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'mydatabase'),  # Default to 'mydatabase'
-        'USER': os.getenv('DB_USER', 'myuser'),      # Default to 'myuser'
-        'PASSWORD': os.getenv('DB_PASSWORD', 'mypassword'),  # Default to 'mypassword'
-        'HOST': os.getenv('DB_HOST', 'db'),  # Database container name from docker-compose
-        'PORT': os.getenv('DB_PORT', '5432'),  # Default PostgreSQL port
-    },
-    'contact_1': {
-        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME', 'mydatabase'),
         'USER': os.getenv('DB_USER', 'myuser'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'mypassword'),
         'HOST': os.getenv('DB_HOST', 'db'),
         'PORT': os.getenv('DB_PORT', '5432'),
-    },
-    'contact_v2': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'mydatabase'),
-        'USER': os.getenv('DB_USER', 'myuser'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'mypassword'),
-        'HOST': os.getenv('DB_HOST', 'db'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+        'OPTIONS': {
+            'options': '-c search_path=public,contact_schema,v2_schema'
+        }
     }
 }
 
 
-DATABASE_ROUTERS = ['myproject.routers.ContactRouter']
+# DATABASE_ROUTERS = ['myproject.routers.ContactRouter']
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5000",
