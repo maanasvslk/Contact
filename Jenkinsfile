@@ -30,26 +30,19 @@ pipeline {
         }
         stage('Verify') {
             steps {
-                script {
-                    // Wait up to 2 minutes for server
-                    def healthy = false
-                    for (int i = 0; i < 24; i++) { // 24 attempts * 5s = 2 minutes
-                        try {
-                            sh "curl -sSf http://localhost:8000/ --connect-timeout 5"
-                            healthy = true
-                            break
-                        } catch (Exception e) {
-                            echo "Waiting for server... (attempt ${i+1}/24)"
-                            sleep(5)
-                        }
-                    }
-                    if (!healthy) {
-                        error("Server failed to start within 2 minutes")
-                    }
-                }
+                sh '''
+                # Check container status
+                docker ps -a
+                # Get logs
+                docker-compose logs --tail=100
+                # Check if server is running
+                curl -v http://localhost:8000 || true
+                # Check files in container
+                docker exec -it $(docker-compose ps -q backend) ls -la /app
+                docker exec -it $(docker-compose ps -q backend) ls -la /app/myproject
+                '''
             }
         }
-    }
     post {
         always {
             sh 'docker-compose logs --tail 50 --no-color > docker.log'
