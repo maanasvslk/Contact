@@ -5,14 +5,33 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     volumes:
-      - ./backend/myproject/db.sqlite3:/app/myproject/db.sqlite3
-      - ./backend/myproject/contact_1.db.sqlite3:/app/myproject/contact_1.db.sqlite3
-      - ./backend/myproject/contact_v2.db.sqlite3:/app/myproject/contact_v2.db.sqlite3
+      - ./backend:/app  # Mount the entire backend directory to the container
     ports:
       - "8000:8000"
     environment:
       - DJANGO_SETTINGS_MODULE=myproject.settings
       - PYTHONPATH=/app
       - APP_VERSION=${APP_VERSION}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=mydatabase  # Change this to your desired DB name
+      - DB_USER=myuser      # Change this to your desired DB user
+      - DB_PASSWORD=mypassword  # Change this to your DB password
     working_dir: /app/myproject
     restart: 'no'
+    depends_on:
+      - db  # Ensure that the PostgreSQL container is up before the backend
+
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: mydatabase  # The name of the database to create
+      POSTGRES_USER: myuser    # The user for the database
+      POSTGRES_PASSWORD: mypassword  # The password for the database
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Persist database data
+    ports:
+      - "5432:5432"  # Expose PostgreSQL port
+
+volumes:
+  postgres_data:  # Declare a volume for PostgreSQL data persistence

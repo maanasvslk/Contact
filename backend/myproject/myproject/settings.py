@@ -47,7 +47,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-'contact.middleware.version_redirect_middleware.VersionRedirectMiddleware'
+    'contact.middleware.version_redirect_middleware.VersionRedirectMiddleware'
 ]
 
 ROOT_URLCONF = 'myproject.urls'
@@ -71,21 +71,34 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
-# Database
+# Database configuration (PostgreSQL)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/app/myproject/db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'mydatabase'),  # Default to 'mydatabase'
+        'USER': os.getenv('DB_USER', 'myuser'),      # Default to 'myuser'
+        'PASSWORD': os.getenv('DB_PASSWORD', 'mypassword'),  # Default to 'mypassword'
+        'HOST': os.getenv('DB_HOST', 'db'),  # Database container name from docker-compose
+        'PORT': os.getenv('DB_PORT', '5432'),  # Default PostgreSQL port
     },
     'contact_1': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/app/myproject/contact_1.db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'mydatabase'),
+        'USER': os.getenv('DB_USER', 'myuser'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'mypassword'),
+        'HOST': os.getenv('DB_HOST', 'db'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     },
     'contact_v2': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/app/myproject/contact_v2.db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'mydatabase'),
+        'USER': os.getenv('DB_USER', 'myuser'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'mypassword'),
+        'HOST': os.getenv('DB_HOST', 'db'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
+
 
 DATABASE_ROUTERS = ['myproject.routers.ContactRouter']
 
