@@ -5,10 +5,9 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/myproject:/app/myproject
+      - C:/JenkinsData/jenkins_home/workspace/Contact/backend:/app  # Mount entire backend directory
     environment:
-      - DJANGO_SETTINGS_MODULE=myproject.settings  # Explicitly set
+      - DJANGO_SETTINGS_MODULE=myproject.settings
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_PASSWORD=maanas6114
       - DJANGO_SUPERUSER_EMAIL=vslk.maanas@example.com
-    # No command needed; entrypoint.sh takes over
