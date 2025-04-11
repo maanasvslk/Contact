@@ -27,6 +27,7 @@ pipeline {
                 sh 'docker exec -e DJANGO_SETTINGS_MODULE=myproject.settings cd-project-backend-1 python /app/myproject/create_superuser.py'
             }
         }
+        // Optional: Uncomment if you want to run tests
         stage('Post-Deployment') {
             steps {
                 script {
