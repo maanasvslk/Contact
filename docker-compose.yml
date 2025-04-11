@@ -19,6 +19,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    labels:
+      - "nagios.enable=true"
+      - "nagios.name=backend"
+      - "nagios.port=8000"
 
   db:
     image: postgres:17
@@ -33,6 +37,27 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    labels:
+      - "nagios.enable=true"
+      - "nagios.name=postgres"
+      - "nagios.port=5432"
+
+  nagios:
+    image: jasonrivers/nagios:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - nagios_data:/opt/nagios/etc
+      - nagios_var:/opt/nagios/var
+    environment:
+      - NAGIOS_TIMEZONE=UTC
+      - NAGIOS_ADMIN_USER=admin
+      - NAGIOS_ADMIN_PASSWORD=admin123
+    depends_on:
+      - backend
+      - db
 
 volumes:
   postgres_data:
+  nagios_data:
+  nagios_var:
