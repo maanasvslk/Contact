@@ -1,17 +1,16 @@
 FROM python:3.10-slim
 
-# Set working directory
 WORKDIR /app
 
-# Copy requirements first for caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire backend directory
 COPY . .
 
-# Make entrypoint executable
-RUN chmod +x /app/entrypoint.sh
+# Make sure entrypoint is executable
+RUN chmod +x entrypoint.sh
 
-# Entrypoint
+WORKDIR /app/myproject
+
+# Use absolute path to entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]

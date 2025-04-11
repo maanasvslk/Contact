@@ -1,10 +1,12 @@
+version: '3.8'
 services:
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    volumes:
-      - ./backend:/app
+    # Remove this volume mount or make it more specific
+    # volumes:
+    #   - ./backend:/app
     ports:
       - "8000:8000"
     environment:
