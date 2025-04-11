@@ -9,18 +9,21 @@ pipeline {
                 sh 'docker-compose down'
                 sh 'docker-compose build'
                 sh 'docker-compose up -d'
-                sh 'sleep 10'  // Increased to 20 seconds to ensure container is ready
+                sh '''
+                    for i in {1..30}; do
+                        if docker ps | grep -q cd-project-backend-1; then
+                            echo "Container is running"
+                            break
+                        fi
+                        echo "Waiting for container... ($i/30)"
+                        sleep 2
+                    done
+                    docker ps | grep cd-project-backend-1 || (echo "Container failed to start" && exit 1)
+                '''
             }
         }
-        stage('Check Container Status') {
+        stage('Run Superuser Creation') {
             steps {
-                sh 'docker ps -f name=cd-project-backend-1'  // Verify container is running
-            }
-        }
-        stage('Run Migrations and Superuser') {
-            steps {
-                sh 'docker exec cd-project-backend-1 python /app/myproject/manage.py migrate contact --database=contact_1'
-                sh 'docker exec cd-project-backend-1 python /app/myproject/manage.py migrate contact_v2 --database=contact_v2'
                 sh 'docker exec -e DJANGO_SETTINGS_MODULE=myproject.settings cd-project-backend-1 python /app/myproject/create_superuser.py'
             }
         }
