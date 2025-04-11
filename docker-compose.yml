@@ -5,7 +5,9 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     volumes:
-      - ./persisted_data:/app/myproject
+      - ./backend/myproject/db.sqlite3:/app/myproject/db.sqlite3
+      - ./backend/myproject/contact_1.db.sqlite3:/app/myproject/contact_1.db.sqlite3
+      - ./backend/myproject/contact_v2.db.sqlite3:/app/myproject/contact_v2.db.sqlite3
     ports:
       - "8000:8000"
     environment:
