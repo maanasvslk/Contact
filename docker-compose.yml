@@ -15,4 +15,4 @@ services:
       - PYTHONPATH=/app
       - APP_VERSION=${APP_VERSION}
     working_dir: /app/myproject
-    restart: unless-stopped
+    restart: 'no'
