@@ -24,14 +24,13 @@ pipeline {
         }
         stage('Run Superuser Creation') {
             steps {
-                sh 'docker exec -e DJANGO_SETTINGS_MODULE=myproject.settings cd-project-backend-1 python /app/myproject/create_superuser.py'
+                sh 'docker exec -e DJANGO_SETTINGS_MODULE=myproject.myproject.settings cd-project-backend-1 python /app/myproject/create_superuser.py'  # Updated path
             }
         }
-        // Optional: Uncomment if you want to run tests
         stage('Post-Deployment') {
             steps {
                 script {
-                    def APP_VERSION = '1'  // Hardcoded version
+                    def APP_VERSION = '1'
                     if (APP_VERSION == '1') {
                         echo 'Deployment successful! Access the app at: http://127.0.0.1:8000'
                     } else if (APP_VERSION == '2') {
