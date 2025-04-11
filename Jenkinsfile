@@ -13,6 +13,10 @@ pipeline {
         stage('Prepare SQLite Databases') {
             steps {
                 script {
+                    // Create target directory if it doesn't exist
+                    sh """
+                        mkdir -p "${WORKSPACE_SQLITE_TARGET}"
+                    """
 
                     // Copy all SQLite files (silently overwrite if exists)
                     sh """
