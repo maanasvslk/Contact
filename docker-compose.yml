@@ -5,7 +5,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - C:/JenkinsData/jenkins_home/workspace/Contact/backend:/app  # Mount entire backend directory
+      - C:/JenkinsData/jenkins_home/workspace/Contact/backend:/app
     environment:
       - DJANGO_SETTINGS_MODULE=myproject.settings
       - DJANGO_SUPERUSER_USERNAME=admin
