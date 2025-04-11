@@ -2,7 +2,7 @@
 set -e
 
 # Set Python path to include /app
-export PYTHONPATH=/app
+export PYTHONPATH=/app/myproject
 
 # Change to Django project directory
 cd /app/myproject
