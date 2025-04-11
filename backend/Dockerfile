@@ -11,5 +11,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN chmod +x entrypoint.sh
 
-ENTRYPOINT ["./entrypoint.sh"]
-# Remove CMD since entrypoint will handle it
+ENTRYPOINT ["/app/entrypoint.sh"]
