@@ -1,6 +1,6 @@
 from django.urls import path, include
 from contact.admin import admin_site
-from contact.views import version_redirect_view
+
 
 urlpatterns = [
     path('admin/', admin_site.urls),
