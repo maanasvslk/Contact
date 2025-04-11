@@ -14,8 +14,8 @@ COPY . .
 
 RUN chmod +x entrypoint.sh
 
-# Set PYTHONPATH explicitly
-ENV PYTHONPATH=/app
+# Set PYTHONPATH to include both /app and /app/myproject
+ENV PYTHONPATH=/app:/app/myproject
 
 WORKDIR /app/myproject
 

@@ -12,8 +12,8 @@ done" || {
   exit 1
 }
 
-# Set Python path explicitly
-export PYTHONPATH=/app
+# Set Python path explicitly (redundant with Dockerfile but ensures it's set)
+export PYTHONPATH=/app:/app/myproject
 
 # Reset migrations if needed
 if ! python manage.py migrate --check; then
@@ -30,13 +30,8 @@ python manage.py migrate
 python manage.py migrate contact --database=contact_1
 python manage.py migrate contact_v2 --database=contact_v2
 
-# Create superuser
+# Create superuser (with explicit settings module)
 DJANGO_SETTINGS_MODULE=myproject.settings python /app/create_superuser.py
 
 # Start server
 exec python manage.py runserver 0.0.0.0:8000
-
-
-
-
-
