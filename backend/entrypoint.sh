@@ -12,7 +12,7 @@ done" || {
   exit 1
 }
 
-# Set Python path explicitly (redundant with Dockerfile but ensures it's set)
+# Set Python path explicitly
 export PYTHONPATH=/app:/app/myproject
 
 # Reset migrations if needed
@@ -20,17 +20,20 @@ if ! python manage.py migrate --check; then
   echo "Resetting migrations..."
   find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
   find . -path "*/migrations/*.pyc" -delete
-
-  python manage.py makemigrations
-  python manage.py migrate --run-syncdb
 fi
 
-# Normal migrations
+# Generate and run migrations for all databases
+echo "Creating migrations..."
+python manage.py makemigrations
+python manage.py makemigrations contact
+python manage.py makemigrations contact_v2
+
+echo "Applying migrations..."
 python manage.py migrate
 python manage.py migrate contact --database=contact_1
 python manage.py migrate contact_v2 --database=contact_v2
 
-# Create superuser (with explicit settings module)
+# Create superuser
 DJANGO_SETTINGS_MODULE=myproject.settings python /app/create_superuser.py
 
 # Start server
