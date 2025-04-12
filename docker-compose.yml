@@ -20,9 +20,9 @@ services:
       db:
         condition: service_healthy
     labels:
-      - "nagios.enable=true"
-      - "nagios.name=backend"
-      - "nagios.port=8000"
+      - "com.nagios.enable=true"
+      - "com.nagios.check_http=yes"
+      - "com.nagios.http_port=8000"
 
   db:
     image: postgres:17
@@ -38,9 +38,10 @@ services:
       timeout: 5s
       retries: 10
     labels:
-      - "nagios.enable=true"
-      - "nagios.name=postgres"
-      - "nagios.port=5432"
+      - "com.nagios.enable=true"
+      - "com.nagios.check_postgres=yes"
+      - "com.nagios.db_user=myuser"
+      - "com.nagios.db_pass=mypassword"
 
   nagios:
     image: jasonrivers/nagios:latest
@@ -48,12 +49,21 @@ services:
       - "8082:80"
     volumes:
       - nagios_data:/opt/nagios/etc
-      - nagios_var:/opt/nagios/var
+      - ./nagios/custom:/opt/nagios/etc/objects/custom
     environment:
       - NAGIOS_TIMEZONE=UTC
-      - NAGIOS_ADMIN_USER=admin
-      - NAGIOS_ADMIN_PASSWORD=admin123
+      - NAGIOS_ADMIN_USER=nagiosadmin
+      - NAGIOS_ADMIN_PASSWORD=nagios
     depends_on:
+      - nrpe
+
+  nrpe:
+    image: jasonrivers/nagios-nrpe
+    environment:
+      - NAGIOS_SERVER=nagios
+    volumes:
+      - ./nagios/nrpe.cfg:/etc/nagios/nrpe.cfg
+    links:
       - backend
       - db
 
