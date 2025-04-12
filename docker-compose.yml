@@ -38,6 +38,7 @@ services:
 
   nagios:
     image: jasonrivers/nagios:latest
+    user: root
     ports:
       - "8082:80"
     volumes:
