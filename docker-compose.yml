@@ -43,6 +43,7 @@ services:
     volumes:
       - nagios_data:/opt/nagios/etc
       - ./nagios/custom:/opt/nagios/etc/objects/custom
+      - ./nagios/nagios.cfg:/opt/nagios/etc/nagios.cfg
     environment:
       - NAGIOS_TIMEZONE=UTC
       - NAGIOS_ADMIN_USER=nagiosadmin
