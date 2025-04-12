@@ -21,10 +21,6 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                    # Ensure proper line endings and permissions
-                    sed -i 's/\r$//' start_nagios.sh
-                    chmod +x start_nagios.sh
-                    ls -la start_nagios.sh
                     docker-compose up -d
                 '''
                 script {

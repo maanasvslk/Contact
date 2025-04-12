@@ -35,23 +35,7 @@ services:
       timeout: 5s
       retries: 10
 
-  nagios:
-    image: jasonrivers/nagios:latest
-    ports:
-      - "8082:80"
-    volumes:
-      - ./start_nagios.sh:/docker-entrypoint.sh:ro  # Using standard entrypoint path
-      - ./nagios/etc:/opt/nagios/etc
-      - ./nagios/var:/opt/nagios/var
-    environment:
-      - NAGIOS_TIMEZONE=UTC
-      - NAGIOS_ADMIN_USER=nagiosadmin
-      - NAGIOS_ADMIN_PASSWORD=nagios
-    user: root
-    depends_on:
-      - backend
-      - db
+
 
 volumes:
   postgres_data:
-  nagios_data:
