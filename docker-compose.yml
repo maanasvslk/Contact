@@ -41,7 +41,7 @@ services:
     ports:
       - "8082:80"
     volumes:
-      - ./start_nagios.sh:/usr/local/bin/start_nagios
+      - ./start_nagios.sh:/usr/local/bin/start_nagios:ro
       - ./nagios/etc:/opt/nagios/etc
       - ./nagios/var:/opt/nagios/var
     environment:

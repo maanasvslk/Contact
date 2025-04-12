@@ -24,8 +24,13 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                       chmod +x start_nagios.sh
-                       docker-compose up -d
+                    chmod +x start_nagios.sh
+                    # Verify file exists
+                    if [ ! -f start_nagios.sh ]; then
+                        echo "Error: start_nagios.sh file not found!"
+                        exit 1
+                    fi
+                    docker-compose up -d
                    '''
                 script {
                     def url = (env.APP_VERSION == '1') ?
