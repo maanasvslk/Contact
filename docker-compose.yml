@@ -19,10 +19,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    labels:
-      - "com.nagios.enable=true"
-      - "com.nagios.check_http=yes"
-      - "com.nagios.http_port=8000"
 
   db:
     image: postgres:17
@@ -32,16 +28,13 @@ services:
       POSTGRES_PASSWORD: mypassword
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"  # Expose PostgreSQL port for TCP checks
     healthcheck:
       test: ["CMD-SHELL", "PGPASSWORD=mypassword pg_isready -U myuser -d mydatabase"]
       interval: 5s
       timeout: 5s
       retries: 10
-    labels:
-      - "com.nagios.enable=true"
-      - "com.nagios.check_postgres=yes"
-      - "com.nagios.db_user=myuser"
-      - "com.nagios.db_pass=mypassword"
 
   nagios:
     image: jasonrivers/nagios:latest
@@ -55,19 +48,9 @@ services:
       - NAGIOS_ADMIN_USER=nagiosadmin
       - NAGIOS_ADMIN_PASSWORD=nagios
     depends_on:
-      - nrpe
-
-  nrpe:
-    image: jasonrivers/nagios-nrpe
-    environment:
-      - NAGIOS_SERVER=nagios
-    volumes:
-      - ./nagios/nrpe.cfg:/etc/nagios/nrpe.cfg
-    links:
       - backend
       - db
 
 volumes:
   postgres_data:
   nagios_data:
-  nagios_var:
