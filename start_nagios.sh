@@ -1,13 +1,18 @@
 #!/bin/bash
-# Fix permissions
-chown -R nagios:nagios /opt/nagios/var
-chmod -R 775 /opt/nagios/var
-
-# Create necessary directories
+# Create required directories
 mkdir -p /opt/nagios/var/rw
 mkdir -p /opt/nagios/var/spool/checkresults
-chown nagios:nagios /opt/nagios/var/rw
-chown nagios:nagios /opt/nagios/var/spool/checkresults
+mkdir -p /opt/nagios/var/archives
 
-# Start Nagios
-/usr/local/nagios/bin/nagios /opt/nagios/etc/nagios.cfg
+# Set permissions
+chown -R nagios:nagios /opt/nagios/var
+chmod -R 775 /opt/nagios/var
+chown nagios:www-data /opt/nagios/var/rw
+chmod g+s /opt/nagios/var/rw
+
+# Verify config before starting
+/opt/nagios/bin/nagios -v /opt/nagios/etc/nagios.cfg
+
+# Start Nagios and Apache
+service apache2 start
+exec /opt/nagios/bin/nagios /opt/nagios/etc/nagios.cfg
