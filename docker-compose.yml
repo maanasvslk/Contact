@@ -40,7 +40,7 @@ services:
     ports:
       - "8082:80"
     volumes:
-      - ./start_nagios.sh:/usr/local/bin/start_nagios.sh:ro
+      - ./start_nagios.sh:/usr/local/bin/start_nagios:ro
       - ./nagios/etc:/opt/nagios/etc
       - ./nagios/var:/opt/nagios/var
     environment:
@@ -48,7 +48,7 @@ services:
       - NAGIOS_ADMIN_USER=nagiosadmin
       - NAGIOS_ADMIN_PASSWORD=nagios
     user: root
-    command: ["/bin/bash", "/usr/local/bin/start_nagios.sh"]
+    command: /usr/local/bin/start_nagios
     depends_on:
       - backend
       - db

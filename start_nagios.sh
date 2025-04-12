@@ -11,8 +11,8 @@ chown nagios:www-data /opt/nagios/var/rw
 chmod g+s /opt/nagios/var/rw
 
 # Verify config before starting
-/opt/nagios/bin/nagios -v /opt/nagios/etc/nagios.cfg
+/opt/nagios/bin/nagios -v /opt/nagios/etc/nagios.cfg || exit 1
 
-# Start Nagios and Apache
+# Start services
 service apache2 start
 exec /opt/nagios/bin/nagios /opt/nagios/etc/nagios.cfg
