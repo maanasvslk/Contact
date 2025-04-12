@@ -40,7 +40,7 @@ services:
     ports:
       - "8082:80"
     volumes:
-      - ./start_nagios.sh:/usr/local/bin/start_nagios:ro
+      - ./start_nagios.sh:/docker-entrypoint.sh:ro  # Using standard entrypoint path
       - ./nagios/etc:/opt/nagios/etc
       - ./nagios/var:/opt/nagios/var
     environment:
@@ -48,7 +48,6 @@ services:
       - NAGIOS_ADMIN_USER=nagiosadmin
       - NAGIOS_ADMIN_PASSWORD=nagios
     user: root
-    command: /usr/local/bin/start_nagios
     depends_on:
       - backend
       - db

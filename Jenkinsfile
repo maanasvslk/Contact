@@ -9,10 +9,7 @@ pipeline {
     stages {
         stage('Stop and Clean') {
             steps {
-                // Remove containers but KEEP volumes
                 sh 'docker-compose down || true'
-
-                // Only remove the backend volumes if needed
                 sh 'docker volume rm -f cd-project_node_modules || true'
             }
         }
@@ -24,15 +21,13 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
+                    # Ensure proper line endings and permissions
+                    sed -i 's/\r$//' start_nagios.sh
                     chmod +x start_nagios.sh
-                    # Verify file exists
-                    if [ ! -f start_nagios.sh ]; then
-                        echo "Error: start_nagios.sh file not found!"
-                        exit 1
-                    fi
                     ls -la start_nagios.sh
+                    file start_nagios.sh
                     docker-compose up -d
-                   '''
+                '''
                 script {
                     def url = (env.APP_VERSION == '1') ?
                         'http://127.0.0.1:8000/' :
