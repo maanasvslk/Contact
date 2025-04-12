@@ -23,7 +23,10 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh 'docker-compose up -d'
+                sh '''
+                       chmod +x start_nagios.sh
+                       docker-compose up -d
+                   '''
                 script {
                     def url = (env.APP_VERSION == '1') ?
                         'http://127.0.0.1:8000/' :

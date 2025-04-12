@@ -38,7 +38,6 @@ services:
 
   nagios:
     image: jasonrivers/nagios:latest
-    user: root
     ports:
       - "8082:80"
     volumes:
@@ -48,6 +47,8 @@ services:
       - NAGIOS_TIMEZONE=UTC
       - NAGIOS_ADMIN_USER=nagiosadmin
       - NAGIOS_ADMIN_PASSWORD=nagios
+    user: root
+    command: [ "/usr/local/bin/start_nagios" ]
     depends_on:
       - backend
       - db
