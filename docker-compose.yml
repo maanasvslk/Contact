@@ -49,7 +49,7 @@ services:
       - NAGIOS_ADMIN_USER=nagiosadmin
       - NAGIOS_ADMIN_PASSWORD=nagios
     user: root
-    command: ["/bin/bash", "/usr/local/bin/start_nagios"]
+    command: ["/bin/bash", "/usr/local/bin/start_nagios.sh"]
     depends_on:
       - backend
       - db
