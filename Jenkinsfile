@@ -4,7 +4,7 @@ pipeline {
         timeout(time: 10, unit: 'MINUTES')
     }
     environment {
-        APP_VERSION = '1' // Change this to switch versions
+        APP_VERSION = '2' // Change this to switch versions
     }
     stages {
         stage('Stop and Clean') {
