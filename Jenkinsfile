@@ -30,6 +30,7 @@ pipeline {
                         echo "Error: start_nagios.sh file not found!"
                         exit 1
                     fi
+                    ls -la start_nagios.sh
                     docker-compose up -d
                    '''
                 script {
