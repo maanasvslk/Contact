@@ -25,7 +25,6 @@ pipeline {
                     sed -i 's/\r$//' start_nagios.sh
                     chmod +x start_nagios.sh
                     ls -la start_nagios.sh
-                    file start_nagios.sh
                     docker-compose up -d
                 '''
                 script {
